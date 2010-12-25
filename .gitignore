@@ -1,0 +1,12 @@
+bin
+gen
+*.project
+*.settings
+*.classpath
+*.jar
+*.class
+*.apk
+*.log
+*.swp
+*.db
+*.sql
