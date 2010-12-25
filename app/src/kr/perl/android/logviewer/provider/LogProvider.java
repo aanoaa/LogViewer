@@ -55,15 +55,25 @@ public class LogProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + LogSchema.TABLE_NAME + " ("
+        	db.execSQL("CREATE TABLE " + LogSchema.TABLE_NAME + " ("
                 + LogSchema._ID +           " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + LogSchema.CHANNEL +       " TEXT NOT NULL,"
                 + LogSchema.NICKNAME +      " TEXT,"
                 + LogSchema.USERNAME +      " TEXT,"
-                + LogSchema.HOSTNAME +      " TEXT"
-                + LogSchema.MESSAGE +       " TEXT"
+                + LogSchema.HOSTNAME +      " TEXT,"
+                + LogSchema.MESSAGE +       " TEXT,"
                 + LogSchema.CREATED_ON +    " INTEGER NOT NULL"
                 + ");");
+        	
+        	ContentValues values;
+            values = new ContentValues();
+            values.put(LogSchema.CHANNEL, "#perl-kr");
+            values.put(LogSchema.NICKNAME, "whitecatz");
+            values.put(LogSchema.USERNAME, "whitecatz");
+            values.put(LogSchema.HOSTNAME, "freenode");
+            values.put(LogSchema.MESSAGE, "무브무브무브");
+            values.put(LogSchema.CREATED_ON, 1292003760);
+            db.insert(LogSchema.TABLE_NAME, LogSchema.CHANNEL, values);
         }
 
         @Override

@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World!</string>
     <string name="app_name">LogViewer</string>
+    <string name="activity_viewer">IRC Log Viewer</string>
 </resources>

@@ -1,0 +1,55 @@
+ViewerActivity
+==============
+
+Preview
+-------
+
+    [=========================]
+    [          Title          ]
+    [=========================]
+    [          Header         ]
+    [=========================]
+    [                         ]
+    [                         ]
+    [           Body          ]
+    [                         ]
+    [                         ]
+    [=========================]
+    [    Hidden Option Menu   ]
+    [=========================]
+
+### *Title* string format
+
+*   현재 보여지는 로그에 따라 날짜, 채널, 호스트이름이 변해야함
+*   default: `IRC Log Viewer`
+*   'YYYY.MM.dd' - 'Channel' at 'hostname' - IRC Log Viewer
+
+예)
+
+    2010.12.25 - #perl-kr at freenode - IRC Log Viewer
+
+### *Header*
+
+*   프레임 고정
+*   터치하면 Body 포커스 최상위로 이동
+*   `prev` 눌르면 전날
+*   `next` 눌르면 담날
+*   `list` 눌르면 로그 목록을 `RadioButton Dialog` 로 표시 - `2010.12.18 [*]`
+*   데이터 없으면 `prev`, `next` disable
+
+### *Body*
+
+*   시간:nick:메세지
+*   하나의 nick이 여러번 이야기한거는 하나의 그룹으로..
+*   그룹의 홀수와 짝수의 배경색을 다르게 표시
+*   시간과 메세지의 글자색은 검정으로 하고, nick 색깔은 미리정해진 20개 안에서 랜덤으로 돌리되, 같은 nick은 같은 색으로 표시
+
+        11:52:50      aer0 | 용사장을 설래게하는 기사
+        12:23:16      jeen | 징징
+        12:23:20           | 어쩌고
+        12:24:04           | 저쩌고
+        12:52:50      aer0 | 역시 맥이야
+
+### *Hidden Option Menu*
+
+*   Search - 일단 보류. 위 기능부터 구현하자
