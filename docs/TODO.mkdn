@@ -1,0 +1,14 @@
+android logviewer
+=================
+
+*   SQLite 사용
+*   Content Provider 로 확장
+*   로그를 이쁘게 print.
+*   sync를 맞추는 방식으로 동작
+*   refresh, 동기화 주기 설정등..
+*   package name: kr.perl.android.logviewer
+
+### 오늘의 할일
+
+*   sample 데이터를 넣고
+*   Cursor를 통해 listview로 보여주기까지
