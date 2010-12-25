@@ -1,30 +1,29 @@
 package kr.perl.android.logviewer.adapter;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import kr.perl.android.logviewer.R;
+import kr.perl.android.logviewer.schema.LogSchema;
 import android.content.Context;
-import android.graphics.Color;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class LogAdapter extends SimpleAdapter {
+public class LogAdapter extends SimpleCursorAdapter {
 	
 	private Context mContext;
 	private int mResourceId;
 	
-	public LogAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
-		super(context, data, resource, from, to);
+	public LogAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+		super(context, layout, c, from, to);
 		mContext = context;
-		mResourceId = resource;
+		mResourceId = layout;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
         if (row == null) {
@@ -32,17 +31,25 @@ public class LogAdapter extends SimpleAdapter {
             row = inflater.inflate(mResourceId, null);
         }
         
-        Map<String, String> map = (HashMap) getItem(position);
-        String time = map.get("time");
-        String nick = map.get("nick");
-        String message = map.get("message");
+        Cursor c = getCursor();
+        int index;
+        index = c.getColumnIndex(LogSchema.CREATED_ON);
+        int created_on = c.getInt(index);
+        index = c.getColumnIndex(LogSchema.NICKNAME);
+        String nickname = c.getString(index);
+        index = c.getColumnIndex(LogSchema.MESSAGE);
+        String message = c.getString(index);
+        
+        Date date = new Date(created_on);
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("hh:mm");
+        String time = sDateFormat.format(date);
         
         TextView textview;
         textview = (TextView) row.findViewById(R.id.text1);
         textview.setText(time);
         
         textview = (TextView) row.findViewById(R.id.text2);
-        textview.setText(nick);
+        textview.setText(nickname);
         
         textview = (TextView) row.findViewById(R.id.text3);
         textview.setText(message);
