@@ -10,5 +10,6 @@
     
     <!-- error message -->
     <string name="error_no_log">로그가 없습니다.</string>
+    <string name="error_http_io">%1$d: %2$s</string>
     <!-- end of error message -->
 </resources>

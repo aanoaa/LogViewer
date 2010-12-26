@@ -6,13 +6,10 @@
     android:orientation="horizontal"
     android:padding="5dip">
     <TextView
-    	android:text="10:24"
     	android:id="@+id/text1"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content" />
     <TextView
-    	android:text="jeen"
-    	android:textColor="#FF0000"
     	android:id="@+id/text2"
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
@@ -22,7 +19,6 @@
     	android:paddingRight="5dip"
     	android:layout_weight="5" />
     <TextView
-    	android:text="징징"
     	android:id="@+id/text3"
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"

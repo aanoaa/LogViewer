@@ -2,11 +2,16 @@ package kr.perl.android.logviewer.adapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.schema.LogSchema;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +20,19 @@ import android.widget.TextView;
 
 public class LogAdapter extends SimpleCursorAdapter {
 	
+	private int[] COLORS = new int[] { Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GRAY, Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.RED, Color.WHITE, Color.YELLOW };
+	
 	private Context mContext;
 	private int mResourceId;
+	private Map<String, Integer> mNickname;
+	private Random mRand;
 	
 	public LogAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
 		super(context, layout, c, from, to);
 		mContext = context;
 		mResourceId = layout;
+		mNickname = new HashMap<String, Integer>();
+		mRand = new Random(System.currentTimeMillis());
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -49,8 +60,15 @@ public class LogAdapter extends SimpleCursorAdapter {
         textview = (TextView) row.findViewById(R.id.text2);
         textview.setText(nickname);
         
+        if (!mNickname.containsKey(nickname)) {
+        	mNickname.put(nickname, COLORS[mRand.nextInt(COLORS.length)]);
+        }
+        
+        textview.setTextColor(mNickname.get(nickname));
+        
         textview = (TextView) row.findViewById(R.id.text3);
         textview.setText(message);
+        
         return row;
 	}
 }

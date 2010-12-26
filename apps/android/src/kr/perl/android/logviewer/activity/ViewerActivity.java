@@ -9,8 +9,11 @@ import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogAdapter;
 import kr.perl.android.logviewer.provider.LogProvider;
 import kr.perl.android.logviewer.schema.LogSchema;
+import kr.perl.android.logviewer.thread.SyncThread;
 import android.app.ListActivity;
+import android.content.Context;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,20 +32,25 @@ public class ViewerActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
-		sync();
+		if (isOnline()) sync();
 		init();
 		addHooks();
 	}
 	
+	public boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+	}
+	
 	private void sync() {
-		setProgressBarIndeterminateVisibility(true);
-		setProgressBarIndeterminateVisibility(false);
+		new SyncThread(this).run();
 	}
 	
 	private void init() {
 		String strDate = getIntent().getStringExtra(KEY_DATE);
 		if (strDate == null || isValidDate(strDate)) {
 			strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+			strDate = "2010-12-10";
 		}
 		
 		setTitle(String.format(getString(R.string.title_format1), strDate));
