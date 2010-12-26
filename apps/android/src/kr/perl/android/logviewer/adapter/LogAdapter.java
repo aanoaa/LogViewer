@@ -32,17 +32,15 @@ public class LogAdapter extends SimpleCursorAdapter {
         }
         
         Cursor c = getCursor();
+        c.moveToPosition(position);
         int index;
         index = c.getColumnIndex(LogSchema.CREATED_ON);
         int created_on = c.getInt(index);
+        String time = new SimpleDateFormat("hh:mm").format(new Date(created_on * 1000));
         index = c.getColumnIndex(LogSchema.NICKNAME);
         String nickname = c.getString(index);
         index = c.getColumnIndex(LogSchema.MESSAGE);
         String message = c.getString(index);
-        
-        Date date = new Date(created_on);
-        SimpleDateFormat sDateFormat = new SimpleDateFormat("hh:mm");
-        String time = sDateFormat.format(date);
         
         TextView textview;
         textview = (TextView) row.findViewById(R.id.text1);

@@ -3,6 +3,11 @@
     <string name="app_name">LogViewer</string>
     <string name="activity_viewer">IRC Log Viewer</string>
     
+    <!-- format -->
+    <string name="title_format1">%1$s - #perl-kr at freenode - IRC Log Viewer</string>
+    <string name="title_format2">%1$s - %2$s at %3$s - IRC Log Viewer</string>
+    <!-- end of format -->
+    
     <!-- error message -->
     <string name="error_no_log">로그가 없습니다.</string>
     <!-- end of error message -->

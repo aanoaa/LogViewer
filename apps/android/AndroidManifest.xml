@@ -5,13 +5,6 @@
     android:versionCode="1"
     android:versionName="1.0">
 
-    <support-screens
-    android:largeScreens="true"
-    android:normalScreens="true"
-    android:smallScreens="true"
-    android:anyDensity="true" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name">
@@ -36,5 +29,18 @@
         <!-- Sample Activities -->
         <!-- end of Sample Activities -->
     </application>
+
+    <!-- permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- end of permissions -->
+
+    <!-- etc -->
+    <support-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:anyDensity="true" />
     <uses-sdk android:minSdkVersion="4" />
+    <!-- end of etc -->
+
 </manifest> 
