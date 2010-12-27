@@ -16,27 +16,65 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.ContentValues;
 import android.net.Uri;
+import android.os.Handler;
+import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class SyncThread extends Thread {
 	
-	private Activity mActivity;
+	private static final String TAG = "SyncThread";
 	
-	public SyncThread(Activity activity) {
+	private ListActivity mActivity;
+	private Handler mHandler;
+	private SimpleCursorAdapter mAdapter;
+	private String mDate;
+	private int mLatestEpoch;
+	
+	private Runnable setEmptyContentRunnable = new Runnable() {
+		public void run() {
+			if (mAdapter.getCount() == 0) {
+				mActivity.setListAdapter(new ArrayAdapter<String>(mActivity.getApplicationContext(), android.R.layout.simple_list_item_1, new String [] { mActivity.getString(R.string.error_no_log) }));
+			}
+		}
+	};
+	
+	public SyncThread(ListActivity activity, SimpleCursorAdapter adapter, String strDate, int latestEpoch) {
 		mActivity = activity;
+		mHandler = new Handler();
+		mAdapter = adapter;
+		mDate = strDate;
+		mLatestEpoch = latestEpoch;
 	}
 	
 	private void toast(String errstr) {
 		Toast.makeText(mActivity.getApplicationContext(), errstr, Toast.LENGTH_SHORT).show();
 	}
 	
+	@Override
 	public void run() {
 		mActivity.setProgressBarIndeterminateVisibility(true);
-		HttpResponse res = HttpHelper.query(Uri.parse("http://192.168.0.18:3000/log/" + System.currentTimeMillis() / 1000));
-		mActivity.setProgressBarIndeterminateVisibility(false);
+		HttpResponse res = null;
+		try {
+			String strUri = "http://192.168.0.209:3000/log/" + mDate;
+			if (mLatestEpoch != 0) strUri += "/" + mLatestEpoch;
+			Log.d(TAG, "uri: " + strUri);
+			res = HttpHelper.query(Uri.parse(strUri));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			mActivity.setProgressBarIndeterminateVisibility(false);
+		}
+		
+		if (res == null) {
+			toast(mActivity.getApplicationContext().getString(R.string.error_connection));
+			return;
+		}
+		
 		if (res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 			toast(String.format(mActivity.getApplicationContext().getString(R.string.error_http_io), res.getStatusLine().getStatusCode(), res.getStatusLine().toString()));
 		} else {
@@ -80,9 +118,11 @@ public class SyncThread extends Thread {
 				
 				if (rows == null) {
 					toast("Couldn't find rows JSONArray");
+					mHandler.post(setEmptyContentRunnable);
 					return;
 				}
 				
+				List<ContentValues> values = new ArrayList<ContentValues>();
 				for (int i=0; i<rows.length(); i++) {
 					JSONObject row = null;
 					try {
@@ -93,10 +133,10 @@ public class SyncThread extends Thread {
 					
 					if (row == null) {
 						toast("Couldn't find " + i + "th row JSONObject");
+						mHandler.post(setEmptyContentRunnable);
 						return;
 					}
 					
-					List<ContentValues> values = new ArrayList<ContentValues>();
 					try {
 						ContentValues value = new ContentValues();
 						String nickname = row.getString("nickname");
@@ -116,11 +156,14 @@ public class SyncThread extends Thread {
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-					
-					if (values.size() != 0) {
-						ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
-						mActivity.getContentResolver().bulkInsert(LogSchema.CONTENT_URI, hidden);
-					}
+				}
+				
+				if (values.size() != 0) {
+					ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
+					int count = mActivity.getContentResolver().bulkInsert(LogSchema.CONTENT_URI, hidden);
+					Log.d(TAG, "bulk inserted " + count);
+					mAdapter.notifyDataSetChanged();
+					mHandler.post(setEmptyContentRunnable);
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 package LogViewer::Web::Controller::Root;
 use Moose;
 use JSON qw/to_json/;
+use DateTime;
 use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
@@ -48,16 +49,37 @@ sub default :Path {
 
 =head2 log
 
-argument 로 epoch from, to 를 받고
-그 사이에 해당 하는 모든 log 데이터를 JSON으로 응답해준다
+from: YYYY-MM-DD 로 받고
+epoch: unixtime 으로 받아서
+from 일에 해당하는 epoch 이후의 로그에 대한 \@array 를 json 으로 응답한다.
 
 =cut
 
 sub log :Local {
-    my ( $self, $c, $from ) = @_;
+    my ( $self, $c, $from, $epoch ) = @_;
     if (defined $from) {
         $c->stash->{from} = $from;
-        my @logs = $c->model('LogDB::Log')->search({ created_on => { '>', $from } });
+        my ($year, $month, $day) = $from =~ m/^(\d{4})-(\d{2})-(\d{2})$/;
+        if (!defined $year or !defined $month or !defined $day) {
+            $c->stash->{errstr} = 'invalid argument';
+            $c->detach('View::JSON')
+        }
+
+        my $dt = DateTime->new(
+            year => $year, 
+            month => $month, 
+            day => $day
+        );
+
+        my $cond =  {
+            -and => [
+                'me.created_on' => { '>', $epoch ? $epoch : $dt->epoch }, 
+                'me.created_on' => { '<=', $dt->epoch + 86399 }, 
+            ]
+        };
+
+        #my @logs = $c->model('LogDB::Log')->search({ created_on => { '>', $from } });
+        my @logs = $c->model('LogDB::Log')->search($cond);
         for my $log (@logs) {
             my $row = {
                 channel => $log->channel, 

@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -32,7 +31,6 @@ public class ViewerActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
-		if (isOnline()) sync();
 		init();
 		addHooks();
 	}
@@ -42,45 +40,40 @@ public class ViewerActivity extends ListActivity {
 		return cm.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 	
-	private void sync() {
-		new SyncThread(this).run();
+	private void sync(final SimpleCursorAdapter adapter, final String date, final int latest_epoch) {
+		new SyncThread(this, adapter, date, latest_epoch).run();
 	}
 	
 	private void init() {
 		String strDate = getIntent().getStringExtra(KEY_DATE);
 		if (strDate == null || isValidDate(strDate)) {
 			strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-			strDate = "2010-12-10";
 		}
 		
 		setTitle(String.format(getString(R.string.title_format1), strDate));
 		
-		String selection = "date(" + LogSchema.CREATED_ON + ", 'unixepoch') = ?";
+		String selection = "date(" + LogSchema.CREATED_ON + ", 'unixepoch', 'localtime') = ?";
 		String[] selectionArgs = new String[] { strDate };
 		Cursor c = managedQuery(LogSchema.CONTENT_URI, LogProvider.PROJECTION, selection, selectionArgs, null);
-		if (c.getCount() == 0) {
-			setEmptyContent();
-			return;
+		int created_on = 0;
+		if (c.getCount() != 0) {
+			c.moveToLast();
+			int index = c.getColumnIndex(LogSchema.CREATED_ON);
+			if (!c.isNull(index)) created_on = c.getInt(index);
 		}
 		
-		setContent(c);
-	}
-	
-	private void setEmptyContent() {
-		setListAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, new String [] { getString(R.string.error_no_log) }));
-	}
-	
-	private void setContent(Cursor cursor) {
 		SimpleCursorAdapter adapter = new LogAdapter(
 			getApplicationContext(), 
 			R.layout.log_row, 
-			cursor, 
+			c, 
 			new String[] {LogSchema.CREATED_ON, LogSchema.NICKNAME, LogSchema.MESSAGE}, 
 			new int[] {R.id.text1, R.id.text2, R.id.text3}
 		);
-		
+			
 		adapter.notifyDataSetChanged();
 		setListAdapter(adapter);
+		
+		if (isOnline()) sync(adapter, strDate, created_on);
 	}
 	
 	private void addHooks() {

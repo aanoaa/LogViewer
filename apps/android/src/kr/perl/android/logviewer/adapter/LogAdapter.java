@@ -11,7 +11,6 @@ import kr.perl.android.logviewer.schema.LogSchema;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,20 +51,20 @@ public class LogAdapter extends SimpleCursorAdapter {
         String nickname = c.getString(index);
         index = c.getColumnIndex(LogSchema.MESSAGE);
         String message = c.getString(index);
-        
+
         TextView textview;
         textview = (TextView) row.findViewById(R.id.text1);
         textview.setText(time);
-        
+
         textview = (TextView) row.findViewById(R.id.text2);
         textview.setText(nickname);
-        
+
         if (!mNickname.containsKey(nickname)) {
-        	mNickname.put(nickname, COLORS[mRand.nextInt(COLORS.length)]);
+            mNickname.put(nickname, COLORS[mRand.nextInt(COLORS.length)]);
         }
-        
+
         textview.setTextColor(mNickname.get(nickname));
-        
+
         textview = (TextView) row.findViewById(R.id.text3);
         textview.setText(message);
         
