@@ -13,7 +13,6 @@ import kr.perl.android.logviewer.util.StringUtil;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -42,7 +41,6 @@ public class ViewerActivity extends ListActivity {
 		uriPiece.add(intent.getStringExtra(Constants.KEY_YEAR));
 		uriPiece.add(intent.getStringExtra(Constants.KEY_MONTH));
 		uriPiece.add(intent.getStringExtra(Constants.KEY_DAY));
-		//uriPiece.add("" + (System.currentTimeMillis() / 1000));
 		
 		String path = StringUtil.join(uriPiece, "/");
 		setTitle(String.format(getString(R.string.title_format3), path));
