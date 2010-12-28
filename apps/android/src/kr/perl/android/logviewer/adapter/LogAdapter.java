@@ -46,7 +46,7 @@ public class LogAdapter extends SimpleCursorAdapter {
         int index;
         index = c.getColumnIndex(LogSchema.CREATED_ON);
         int created_on = c.getInt(index);
-        String time = new SimpleDateFormat("hh:mm").format(new Date(created_on * 1000));
+        String time = new SimpleDateFormat("HH:mm").format(new Date((long) created_on * 1000));
         index = c.getColumnIndex(LogSchema.NICKNAME);
         String nickname = c.getString(index);
         index = c.getColumnIndex(LogSchema.MESSAGE);
