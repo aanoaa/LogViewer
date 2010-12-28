@@ -3,12 +3,15 @@ package kr.perl.android.logviewer.util;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.widget.Toast;
 
 public class ContextUtil {
 	public static boolean isOnline(Activity activity) {
 		ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-		return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+		NetworkInfo info = cm.getActiveNetworkInfo();
+		if (info == null) return false;
+		return info.isConnectedOrConnecting();
 	}
 	
 	public static void toast(Activity activity, String message) {
