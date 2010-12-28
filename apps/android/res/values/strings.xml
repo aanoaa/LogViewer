@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LogViewer</string>
+    
     <string name="activity_viewer">IRC Log Viewer</string>
+    
+    <string name="btn_top">top</string>
+    <string name="btn_bottom">bottom</string>
+    <string name="btn_reverse">reverse</string>
+    <string name="btn_refresh">refresh</string>
+    <string name="btn_prev_day">previous day</string>
+    <string name="btn_next_day">next day</string>
     
     <!-- format -->
     <string name="title_format1">%1$s - #perl-kr at freenode - IRC Log Viewer</string>
-    <string name="title_format2">%1$s - %2$s at %3$s - IRC Log Viewer</string>
+    <string name="title_format2">%1$s - %2$s IRC Log Viewer</string>
     <string name="title_format3">%1$s - IRC Log Viewer</string>
     <!-- end of format -->
     

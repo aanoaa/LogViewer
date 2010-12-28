@@ -5,10 +5,7 @@
 		<item name="android:textColor">@color/white</item>
 		<item name="android:gravity">center</item>
 		<item name="android:background">@drawable/button_background</item>
-		<item name="android:paddingTop">5dip</item>
-		<item name="android:paddingBottom">5dip</item>
-		<item name="android:paddingLeft">20dip</item>
-		<item name="android:paddingRight">20dip</item>
+		<item name="android:padding">5dip</item>
 		<item name="android:singleLine">true</item>
 		<item name="android:ellipsize">marquee</item>
 	</style>

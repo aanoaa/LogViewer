@@ -21,18 +21,14 @@ import android.app.ListActivity;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.SimpleCursorAdapter;
 
 public class SyncThread extends Thread {
 	
-	private static final String TAG = "SyncThread";
-	
 	private ListActivity mActivity;
 	private Handler mHandler;
-	private int mLatestEpoch;
-	private String mStrUri;
+	private Uri mUri;
 	private String mChannel;
 	
 	private Runnable setEmptyContentRunnable = new Runnable() {
@@ -44,11 +40,10 @@ public class SyncThread extends Thread {
 		}
 	};
 	
-	public SyncThread(ListActivity activity, String strUri, int latestEpoch, String channel) {
+	public SyncThread(ListActivity activity, Uri uri, String channel) {
 		mActivity = activity;
 		mHandler = new Handler();
-		mLatestEpoch = latestEpoch;
-		mStrUri = strUri;
+		mUri = uri;
 		mChannel = channel;
 	}
 	
@@ -57,9 +52,7 @@ public class SyncThread extends Thread {
 		mActivity.setProgressBarIndeterminateVisibility(true);
 		HttpResponse res = null;
 		try {
-			if (mLatestEpoch != 0) mStrUri += "/" + mLatestEpoch;
-			Log.d(TAG, "uri: " + mStrUri);
-			res = HttpHelper.query(Uri.parse(mStrUri));
+			res = HttpHelper.query(mUri);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -175,8 +168,7 @@ public class SyncThread extends Thread {
 
 		if (values.size() != 0) {
 			ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
-			int count = mActivity.getContentResolver().bulkInsert(LogSchema.CONTENT_URI, hidden);
-			Log.d(TAG, "bulk inserted " + count);
+			mActivity.getContentResolver().bulkInsert(LogSchema.CONTENT_URI, hidden);
 			((SimpleCursorAdapter) mActivity.getListAdapter()).notifyDataSetChanged();
 		} else {
 			mHandler.post(setEmptyContentRunnable);

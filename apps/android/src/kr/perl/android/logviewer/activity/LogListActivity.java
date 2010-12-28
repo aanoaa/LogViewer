@@ -34,6 +34,7 @@ public class LogListActivity extends ListActivity {
 		String value = ((TextView) v).getText().toString();
 		if (mIntent.getStringExtra(Constants.KEY_MONTH) != null) {
 			mIntent.putExtra(Constants.KEY_DAY, value);
+			mIntent.putExtra(Constants.KEY_YMD, String.format("%s-%s-%s", mIntent.getStringExtra(Constants.KEY_YEAR), mIntent.getStringExtra(Constants.KEY_MONTH), value));
 			mIntent.setClass(this, ViewerActivity.class);
 		} else {
 			for (String key : new String[] { Constants.KEY_CHANNEL, Constants.KEY_YEAR, Constants.KEY_MONTH }) {
