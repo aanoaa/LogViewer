@@ -7,8 +7,6 @@ public final class LogSchema implements BaseColumns {
     public static final String TABLE_NAME   = "log";
     public static final String CHANNEL      = "channel";
     public static final String NICKNAME     = "nickname";
-    public static final String USERNAME     = "username";
-    public static final String HOSTNAME     = "hostname";
     public static final String MESSAGE      = "message";
     public static final String CREATED_ON   = "created_on";
 

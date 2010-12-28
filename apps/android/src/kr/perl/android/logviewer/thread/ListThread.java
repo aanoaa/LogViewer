@@ -7,7 +7,6 @@ import java.util.List;
 
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.helper.HttpHelper;
-import kr.perl.android.logviewer.schema.LogSchema;
 import kr.perl.android.logviewer.util.ContextUtil;
 
 import org.apache.http.HttpEntity;
@@ -18,55 +17,45 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
-import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.SimpleCursorAdapter;
 
-public class SyncThread extends Thread {
+public class ListThread extends Thread {
 	
-	private static final String TAG = "SyncThread";
+	private static final String TAG = "ListThread";
 	
 	private ListActivity mActivity;
 	private Handler mHandler;
-	private int mLatestEpoch;
-	private String mStrUri;
-	private String mChannel;
+	private Uri mUri;
 	
 	private Runnable setEmptyContentRunnable = new Runnable() {
 		public void run() {
-			mActivity.setProgressBarIndeterminateVisibility(false);
-			if (mActivity.getListAdapter().getCount() == 0) {
-				mActivity.setListAdapter(new ArrayAdapter<String>(mActivity.getApplicationContext(), android.R.layout.simple_list_item_1, new String [] { mActivity.getString(R.string.error_no_log) }));
-			}
+			mActivity.setListAdapter(new ArrayAdapter<String>(mActivity.getApplicationContext(), android.R.layout.simple_list_item_1, new String [] { mActivity.getString(R.string.error_no_log) }));
 		}
 	};
 	
-	public SyncThread(ListActivity activity, String strUri, int latestEpoch, String channel) {
+	public ListThread(ListActivity activity, Uri uri) {
 		mActivity = activity;
 		mHandler = new Handler();
-		mLatestEpoch = latestEpoch;
-		mStrUri = strUri;
-		mChannel = channel;
+		mUri = uri;
 	}
 	
-	@Override
 	public void run() {
 		mActivity.setProgressBarIndeterminateVisibility(true);
 		HttpResponse res = null;
 		try {
-			if (mLatestEpoch != 0) mStrUri += "/" + mLatestEpoch;
-			Log.d(TAG, "uri: " + mStrUri);
-			res = HttpHelper.query(Uri.parse(mStrUri));
+			Log.d(TAG, mUri.toString());
+			res = HttpHelper.query(mUri);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			mActivity.setProgressBarIndeterminateVisibility(false);
 		}
 		
 		if (res == null) {
 			ContextUtil.toast(mActivity, mActivity.getApplicationContext().getString(R.string.error_connection));
-			mHandler.post(setEmptyContentRunnable);
 			return;
 		}
 		
@@ -74,7 +63,7 @@ public class SyncThread extends Thread {
 			ContextUtil.toast(mActivity, String.format(mActivity.getApplicationContext().getString(R.string.error_http_io), res.getStatusLine().getStatusCode(), res.getStatusLine().toString()));
 			mHandler.post(setEmptyContentRunnable);
 			return;
-		} 
+		}
 		
 		JSONObject json = null;
 		HttpEntity entity = res.getEntity();
@@ -133,7 +122,7 @@ public class SyncThread extends Thread {
 			return;
 		}
 
-		List<ContentValues> values = new ArrayList<ContentValues>();
+		List<String> items = new ArrayList<String>();
 		for (int i=0; i<data.length(); i++) {
 			JSONArray row = null;
 			try {
@@ -148,40 +137,23 @@ public class SyncThread extends Thread {
 				return;
 			}
 		
-			String nickname = null;
-			int created_on = 0;
-			String message = null;
+			String item = null;
 			try {
-				nickname = row.getString(0);
-				created_on = row.getInt(1);
-				message = row.getString(2);
+				item = row.getString(0);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 			
-			if (nickname == null || message == null) {
+			if (item == null) {
 				ContextUtil.toast(mActivity, "cannot find entity"); // 이것도 바꿔야겟지..
 				mHandler.post(setEmptyContentRunnable);
 				return;
 			}
 			
-			ContentValues value = new ContentValues();
-			value.put(LogSchema.CHANNEL, mChannel);
-			value.put(LogSchema.NICKNAME, nickname);
-			value.put(LogSchema.MESSAGE, message);
-			value.put(LogSchema.CREATED_ON, created_on);
-			values.add(value);
-		}
-
-		if (values.size() != 0) {
-			ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
-			int count = mActivity.getContentResolver().bulkInsert(LogSchema.CONTENT_URI, hidden);
-			Log.d(TAG, "bulk inserted " + count);
-			((SimpleCursorAdapter) mActivity.getListAdapter()).notifyDataSetChanged();
-		} else {
-			mHandler.post(setEmptyContentRunnable);
+			items.add(item);
 		}
 		
-		mActivity.setProgressBarIndeterminateVisibility(false);
+		// something here
+		mActivity.setListAdapter(new ArrayAdapter<String>(mActivity.getApplicationContext(), android.R.layout.simple_list_item_1, items));
 	}
 }

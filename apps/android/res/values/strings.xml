@@ -6,6 +6,7 @@
     <!-- format -->
     <string name="title_format1">%1$s - #perl-kr at freenode - IRC Log Viewer</string>
     <string name="title_format2">%1$s - %2$s at %3$s - IRC Log Viewer</string>
+    <string name="title_format3">%1$s - IRC Log Viewer</string>
     <!-- end of format -->
     
     <!-- error message -->

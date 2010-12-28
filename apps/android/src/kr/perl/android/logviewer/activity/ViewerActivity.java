@@ -1,30 +1,26 @@
 package kr.perl.android.logviewer.activity;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
+import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogAdapter;
 import kr.perl.android.logviewer.provider.LogProvider;
 import kr.perl.android.logviewer.schema.LogSchema;
 import kr.perl.android.logviewer.thread.SyncThread;
+import kr.perl.android.logviewer.util.ContextUtil;
+import kr.perl.android.logviewer.util.StringUtil;
 import android.app.ListActivity;
-import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class ViewerActivity extends ListActivity {
-	
-	private static final String TAG = "ViewerActivity";
-	public static final String KEY_DATE = "date";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,25 +31,25 @@ public class ViewerActivity extends ListActivity {
 		addHooks();
 	}
 	
-	public boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		return cm.getActiveNetworkInfo().isConnectedOrConnecting();
-	}
-	
-	private void sync(final SimpleCursorAdapter adapter, final String date, final int latest_epoch) {
-		new SyncThread(this, adapter, date, latest_epoch).run();
+	private void sync(final String strUri, final int latest_epoch, final String channel) {
+		new SyncThread(this, strUri, latest_epoch, channel).run();
 	}
 	
 	private void init() {
-		String strDate = getIntent().getStringExtra(KEY_DATE);
-		if (strDate == null || isValidDate(strDate)) {
-			strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-		}
+		Intent intent = getIntent();
+		ArrayList<String> uriPiece = new ArrayList<String>();
+		uriPiece.add(intent.getStringExtra(Constants.KEY_CHANNEL));
+		uriPiece.add(intent.getStringExtra(Constants.KEY_YEAR));
+		uriPiece.add(intent.getStringExtra(Constants.KEY_MONTH));
+		uriPiece.add(intent.getStringExtra(Constants.KEY_DAY));
+		//uriPiece.add("" + (System.currentTimeMillis() / 1000));
 		
-		setTitle(String.format(getString(R.string.title_format1), strDate));
+		String path = StringUtil.join(uriPiece, "/");
+		setTitle(String.format(getString(R.string.title_format3), path));
 		
-		String selection = "date(" + LogSchema.CREATED_ON + ", 'unixepoch', 'localtime') = ?";
-		String[] selectionArgs = new String[] { strDate };
+		String created_on_arg = uriPiece.get(1) + "-" + uriPiece.get(2) + "-" + uriPiece.get(3);
+		String selection = "date(" + LogSchema.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + LogSchema.CHANNEL + " = ?";
+		String[] selectionArgs = new String[] { created_on_arg, uriPiece.get(0)	};
 		Cursor c = managedQuery(LogSchema.CONTENT_URI, LogProvider.PROJECTION, selection, selectionArgs, null);
 		int created_on = 0;
 		if (c.getCount() != 0) {
@@ -73,7 +69,7 @@ public class ViewerActivity extends ListActivity {
 		adapter.notifyDataSetChanged();
 		setListAdapter(adapter);
 		
-		if (isOnline()) sync(adapter, strDate, created_on);
+		if (ContextUtil.isOnline(this)) sync(Constants.LOG_SERVER_DOMAIN + path, created_on, uriPiece.get(0));
 	}
 	
 	private void addHooks() {
@@ -83,20 +79,4 @@ public class ViewerActivity extends ListActivity {
 	@Override
     public void onListItemClick(ListView parent, View v, int position, long id) {
     }
-	
-	/*
-	 * FIXME:
-	 * 	MMdd 에 대해 더 엄격한 유효성 검사가 필요함
-	 * 	MM은 12 이상일 수 없고, dd 도 음수나 32 이상이 될 수 없기에..
-	 */
-	private boolean isValidDate(String strDate) {
-		Pattern pattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
-		Matcher m = pattern.matcher(strDate);
-		if (m.find()) {
-			return true;
-		}
-	
-		Log.w(TAG, "invalid " + strDate + " set to date as today");
-		return false;
-	}
 }

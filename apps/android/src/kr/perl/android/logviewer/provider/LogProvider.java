@@ -22,7 +22,7 @@ import android.util.Log;
 public class LogProvider extends ContentProvider {
 
     private static final String     TAG         = "LogProvider";
-    public static final String[]    PROJECTION  = new String[] { LogSchema._ID, LogSchema.CHANNEL, LogSchema.NICKNAME, LogSchema.USERNAME, LogSchema.HOSTNAME, LogSchema.MESSAGE, LogSchema.CREATED_ON };
+    public static final String[]    PROJECTION  = new String[] { LogSchema._ID, LogSchema.CHANNEL, LogSchema.NICKNAME, LogSchema.MESSAGE, LogSchema.CREATED_ON };
 
     private static final String DATABASE_NAME       = "log.db";
     private static final int    DATABASE_VERSION    = 1;
@@ -42,8 +42,6 @@ public class LogProvider extends ContentProvider {
         sLogSchemaProjectionMap.put(LogSchema._ID,          LogSchema._ID);
         sLogSchemaProjectionMap.put(LogSchema.CHANNEL,      LogSchema.CHANNEL);
         sLogSchemaProjectionMap.put(LogSchema.NICKNAME,     LogSchema.NICKNAME);
-        sLogSchemaProjectionMap.put(LogSchema.USERNAME,     LogSchema.USERNAME);
-        sLogSchemaProjectionMap.put(LogSchema.HOSTNAME,     LogSchema.HOSTNAME);
         sLogSchemaProjectionMap.put(LogSchema.MESSAGE,      LogSchema.MESSAGE);
         sLogSchemaProjectionMap.put(LogSchema.CREATED_ON,   LogSchema.CREATED_ON);
     }
@@ -59,8 +57,6 @@ public class LogProvider extends ContentProvider {
                 + LogSchema._ID +           " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + LogSchema.CHANNEL +       " TEXT NOT NULL,"
                 + LogSchema.NICKNAME +      " TEXT,"
-                + LogSchema.USERNAME +      " TEXT,"
-                + LogSchema.HOSTNAME +      " TEXT,"
                 + LogSchema.MESSAGE +       " TEXT,"
                 + LogSchema.CREATED_ON +    " INTEGER NOT NULL"
                 + ");");
