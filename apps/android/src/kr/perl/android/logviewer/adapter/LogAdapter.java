@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.schema.LogSchema;
@@ -24,14 +23,15 @@ public class LogAdapter extends SimpleCursorAdapter {
 	private Context mContext;
 	private int mResourceId;
 	private Map<String, Integer> mNickname;
-	private Random mRand;
+	private int mIndex;
 	
 	public LogAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
 		super(context, layout, c, from, to);
 		mContext = context;
 		mResourceId = layout;
 		mNickname = new HashMap<String, Integer>();
-		mRand = new Random(System.currentTimeMillis());
+		mIndex = 0;
+		
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -60,7 +60,8 @@ public class LogAdapter extends SimpleCursorAdapter {
         textview.setText(nickname);
 
         if (!mNickname.containsKey(nickname)) {
-            mNickname.put(nickname, COLORS[mRand.nextInt(COLORS.length)]);
+            if (mIndex == COLORS.length) mIndex = 0;
+            mNickname.put(nickname, COLORS[mIndex++]);
         }
 
         textview.setTextColor(mNickname.get(nickname));
