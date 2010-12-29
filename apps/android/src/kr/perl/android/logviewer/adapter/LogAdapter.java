@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.schema.LogSchema;
@@ -60,8 +62,14 @@ public class LogAdapter extends SimpleCursorAdapter {
         textview.setText(nickname);
 
         if (!mNickname.containsKey(nickname)) {
-        	if (mIndex == COLORS.length) mIndex = 0;
-            mNickname.put(nickname, COLORS[mIndex++]);
+        	Pattern p = Pattern.compile("(whitecat|agcraft)", Pattern.CASE_INSENSITIVE);
+        	Matcher m = p.matcher(nickname);
+        	if (m.find()) {
+        		mNickname.put(nickname, Color.WHITE);
+        	} else {
+        		if (mIndex == COLORS.length) mIndex = 0;
+                mNickname.put(nickname, COLORS[mIndex++]);
+        	}
         }
 
         textview.setTextColor(mNickname.get(nickname));
