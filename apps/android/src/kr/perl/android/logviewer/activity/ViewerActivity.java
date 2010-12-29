@@ -150,6 +150,14 @@ public class ViewerActivity extends ListActivity {
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				mList.setSelection(0);
+			}
+		});
+		
+		button = (Button) findViewById(R.id.button2);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
 				refresh();
 			}
 		});
