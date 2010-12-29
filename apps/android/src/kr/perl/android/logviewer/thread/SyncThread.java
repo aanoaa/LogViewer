@@ -89,6 +89,11 @@ public class SyncThread extends Thread {
 		}
 
 		String response_body = HttpHelper.convertStreamToString(instream);
+		if (response_body == null) {
+			ContextUtil.toast(mActivity, "response body is null");
+			return;
+		}
+		
 		try {
 			json = new JSONObject(response_body);
 		} catch (JSONException e) {

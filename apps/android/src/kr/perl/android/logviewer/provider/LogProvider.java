@@ -131,16 +131,17 @@ public class LogProvider extends ContentProvider {
     	long start = System.currentTimeMillis();
     	int numValues = values.length;
     	SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+    	Uri historyUri = null;
     	try {
     		db.beginTransaction();
         	for (ContentValues value : values) {
             	long rowId = db.insert(LogSchema.TABLE_NAME, LogSchema.CHANNEL, value);
             	if (rowId > 0) {
-                    Uri historyUri = ContentUris.withAppendedId(LogSchema.CONTENT_URI, rowId);
-                    getContext().getContentResolver().notifyChange(historyUri, null);
+                    historyUri = ContentUris.withAppendedId(LogSchema.CONTENT_URI, rowId);
                 }
         	}
         	db.setTransactionSuccessful();
+        	if (historyUri != null)	getContext().getContentResolver().notifyChange(historyUri, null);
     	} catch(SQLException e) {
     		Log.e(TAG, e.toString());
     		e.printStackTrace();

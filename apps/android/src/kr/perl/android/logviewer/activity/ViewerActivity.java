@@ -45,6 +45,7 @@ public class ViewerActivity extends ListActivity {
 		setContentView(R.layout.viewer);
 		init();
 		addHooks();
+		refresh();
 	}
 	
 	private void sync(final Uri uri, final String channel) {
@@ -91,7 +92,6 @@ public class ViewerActivity extends ListActivity {
 		SimpleCursorAdapter adapter = getAdapter(mCursor);
 		adapter.notifyDataSetChanged();
 		setListAdapter(adapter);
-		refresh();
 	}
 	
 	private void refresh() {
