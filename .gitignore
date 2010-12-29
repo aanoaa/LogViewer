@@ -11,3 +11,5 @@ gen
 *.db
 *.sql
 Constants.java
+build
+Config.h
