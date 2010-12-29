@@ -42,12 +42,12 @@ public class LogAdapter extends SimpleCursorAdapter {
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-        if (row == null) {
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            row = inflater.inflate(mResourceId, null);
-        }
-        
+		if (convertView != null)
+			return convertView;
+		
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View row = inflater.inflate(mResourceId, null);
+
         Cursor c = getCursor();
         c.moveToPosition(position);
         int index;
@@ -59,13 +59,19 @@ public class LogAdapter extends SimpleCursorAdapter {
         index = c.getColumnIndex(LogSchema.MESSAGE);
         String message = c.getString(index);
 
-        TextView textview;
-        textview = (TextView) row.findViewById(R.id.text1);
-        textview.setText(time);
+        TextView tvTime = (TextView) row.findViewById(R.id.text1);
+        TextView tvNickname = (TextView) row.findViewById(R.id.text2);
+        TextView tvMessage = (TextView) row.findViewById(R.id.text3);
+        
+        tvTime.setText(time);
+        tvNickname.setText(nickname);
+        tvMessage.setText(message);
 
-        textview = (TextView) row.findViewById(R.id.text2);
-        textview.setText(nickname);
-
+        if (nickname.equals("")) {
+        	tvTime.setTextColor(Color.GRAY);
+        	tvNickname.setTextColor(Color.GRAY);
+        	tvMessage.setTextColor(Color.GRAY);
+        }
         if (!mNickname.containsKey(nickname)) {
         	Pattern p = Pattern.compile("(whitecat|agcraft)", Pattern.CASE_INSENSITIVE);
         	Matcher m = p.matcher(nickname);
@@ -76,12 +82,9 @@ public class LogAdapter extends SimpleCursorAdapter {
                 mNickname.put(nickname, COLORS[mIndex++]);
         	}
         }
-
-        textview.setTextColor(mNickname.get(nickname));
-
-        textview = (TextView) row.findViewById(R.id.text3);
-        textview.setText(message);
         
+       	tvNickname.setTextColor(mNickname.get(nickname));
+       	
         return row;
 	}
 }
