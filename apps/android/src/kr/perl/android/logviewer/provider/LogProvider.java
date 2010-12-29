@@ -127,8 +127,6 @@ public class LogProvider extends ContentProvider {
     
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
-    	Log.d(TAG, "Start");
-    	long start = System.currentTimeMillis();
     	int numValues = values.length;
     	SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
     	Uri historyUri = null;
@@ -149,9 +147,6 @@ public class LogProvider extends ContentProvider {
     		db.endTransaction();
     	}
         
-        long elapsedTimeMillis = System.currentTimeMillis()-start;
-        Log.d(TAG, "elapsed time: " + (elapsedTimeMillis / 1000.0));
-        Log.d(TAG, "End");
         return numValues;
     }
     

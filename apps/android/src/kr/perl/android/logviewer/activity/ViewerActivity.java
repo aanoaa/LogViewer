@@ -41,15 +41,20 @@ public class ViewerActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "create: " + System.currentTimeMillis());
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
+		setProgressBarIndeterminateVisibility(true);
 		init();
 		addHooks();
-		refresh();
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				refresh();
+			}
+		}, 100);
 	}
 	
 	private void sync(final Uri uri, final String channel) {
-		setProgressBarIndeterminateVisibility(true);
 		new SyncThread(this, uri, channel).run();
 	}
 	
@@ -72,7 +77,6 @@ public class ViewerActivity extends ListActivity {
 		Intent intent = getIntent();
 		mList = (ListView) findViewById(android.R.id.list);
 		mStrDate = intent.getStringExtra(Constants.KEY_YMD);
-		mStrDate = "2010-12-29";
 		mChannel = intent.getStringExtra(Constants.KEY_CHANNEL);
 		if (mStrDate == null || !isValidDate(mStrDate)) {
 			Log.w(TAG, "invalid " + mStrDate + " set to date as today");
@@ -86,7 +90,6 @@ public class ViewerActivity extends ListActivity {
 		
 		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
 		mCursor = getLogCursor(mChannel, mStrDate, null);
-		Log.d(TAG, "Cursor Count: " + mCursor.getCount());
 		mLatestEpoch = 0;
 		
 		SimpleCursorAdapter adapter = getAdapter(mCursor);
@@ -95,13 +98,18 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private void refresh() {
+		setProgressBarIndeterminateVisibility(true);
 		if (mCursor.getCount() != 0) {
 			mCursor.moveToLast();
 			int index = mCursor.getColumnIndex(LogSchema.CREATED_ON);
 			if (!mCursor.isNull(index)) mLatestEpoch = mCursor.getInt(index);
 		}
 		
-		if (ContextUtil.isOnline(this)) sync(buildUri(mChannel, mStrDate, mLatestEpoch), mChannel);
+		if (ContextUtil.isOnline(this)) {
+			sync(buildUri(mChannel, mStrDate, mLatestEpoch), mChannel);
+		} else {
+			setProgressBarIndeterminateVisibility(false);
+		}
 		mList.setSelection(mCursor.getCount()); // insert 된 row 가 없어도 마지막으로 보내주자
 	}
 	
