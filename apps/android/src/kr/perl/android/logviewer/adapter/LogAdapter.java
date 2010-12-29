@@ -12,6 +12,7 @@ import kr.perl.android.logviewer.schema.LogSchema;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class LogAdapter extends SimpleCursorAdapter {
 	private int mResourceId;
 	private Map<String, Integer> mNickname;
 	private int mIndex;
+	private Pattern pWhitecat;
 	
 	public LogAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
 		super(context, layout, c, from, to);
@@ -38,16 +40,20 @@ public class LogAdapter extends SimpleCursorAdapter {
 		mResourceId = layout;
 		mNickname = new HashMap<String, Integer>();
 		mIndex = 0;
-		
+		pWhitecat = Pattern.compile("(whitecat|agcraft)", Pattern.CASE_INSENSITIVE);
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
-		if (convertView != null)
-			return convertView;
+		View row;
 		
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row = inflater.inflate(mResourceId, null);
-
+		if (convertView == null) {
+	        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        row = inflater.inflate(mResourceId, null);
+		}
+		else {
+			row = convertView;
+		}
+		
         Cursor c = getCursor();
         c.moveToPosition(position);
         int index;
@@ -66,25 +72,26 @@ public class LogAdapter extends SimpleCursorAdapter {
         tvTime.setText(time);
         tvNickname.setText(nickname);
         tvMessage.setText(message);
-
+    	
+    	tvTime.setTextColor(Color.GRAY);
+    	
         if (nickname.equals("")) {
-        	tvTime.setTextColor(Color.GRAY);
         	tvNickname.setTextColor(Color.GRAY);
         	tvMessage.setTextColor(Color.GRAY);
+        	return row;
         }
+
+        tvMessage.setTextColor(Color.LTGRAY);
         if (!mNickname.containsKey(nickname)) {
-        	Pattern p = Pattern.compile("(whitecat|agcraft)", Pattern.CASE_INSENSITIVE);
-        	Matcher m = p.matcher(nickname);
+        	Matcher m = pWhitecat.matcher(nickname);
         	if (m.find()) {
-        		mNickname.put(nickname, Color.WHITE);
+        		mNickname.put(nickname, -2302756);
         	} else {
         		if (mIndex == COLORS.length) mIndex = 0;
                 mNickname.put(nickname, COLORS[mIndex++]);
         	}
         }
-        
        	tvNickname.setTextColor(mNickname.get(nickname));
-       	
         return row;
 	}
 }
