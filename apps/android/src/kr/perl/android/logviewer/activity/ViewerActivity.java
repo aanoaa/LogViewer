@@ -121,7 +121,7 @@ public class ViewerActivity extends ListActivity {
 	
 	private SimpleCursorAdapter getAdapter(Cursor cursor) {
 		return new LogAdapter(
-			getApplicationContext(), 
+			this, 
 			R.layout.log_row, 
 			cursor, 
 			new String[] { LogSchema.CREATED_ON, LogSchema.NICKNAME, LogSchema.MESSAGE }, 
