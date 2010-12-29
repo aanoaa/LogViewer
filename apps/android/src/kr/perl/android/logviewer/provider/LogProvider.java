@@ -124,7 +124,36 @@ public class LogProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
     }
-
+    
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+    	Log.d(TAG, "Start");
+    	long start = System.currentTimeMillis();
+    	int numValues = values.length;
+    	SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+    	try {
+    		db.beginTransaction();
+        	for (ContentValues value : values) {
+            	long rowId = db.insert(LogSchema.TABLE_NAME, LogSchema.CHANNEL, value);
+            	if (rowId > 0) {
+                    Uri historyUri = ContentUris.withAppendedId(LogSchema.CONTENT_URI, rowId);
+                    getContext().getContentResolver().notifyChange(historyUri, null);
+                }
+        	}
+        	db.setTransactionSuccessful();
+    	} catch(SQLException e) {
+    		Log.e(TAG, e.toString());
+    		e.printStackTrace();
+    	} finally {
+    		db.endTransaction();
+    	}
+        
+        long elapsedTimeMillis = System.currentTimeMillis()-start;
+        Log.d(TAG, "elapsed time: " + (elapsedTimeMillis / 1000.0));
+        Log.d(TAG, "End");
+        return numValues;
+    }
+    
     @Override
     public Uri insert(Uri uri, ContentValues initialValues) {
         if (sUriMatcher.match(uri) != LOG) {

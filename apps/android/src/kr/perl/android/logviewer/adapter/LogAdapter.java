@@ -60,7 +60,7 @@ public class LogAdapter extends SimpleCursorAdapter {
         textview.setText(nickname);
 
         if (!mNickname.containsKey(nickname)) {
-            if (mIndex == COLORS.length) mIndex = 0;
+        	if (mIndex == COLORS.length) mIndex = 0;
             mNickname.put(nickname, COLORS[mIndex++]);
         }
 

@@ -16,9 +16,11 @@ import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -34,17 +36,19 @@ public class ViewerActivity extends ListActivity {
 	private String mStrDate;
 	private int mLatestEpoch;
 	private Cursor mCursor;
+	private ListView mList;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
 		init();
 		addHooks();
 	}
 	
 	private void sync(final Uri uri, final String channel) {
+		setProgressBarIndeterminateVisibility(true);
 		new SyncThread(this, uri, channel).run();
 	}
 	
@@ -65,19 +69,23 @@ public class ViewerActivity extends ListActivity {
 	
 	private void init() {
 		Intent intent = getIntent();
+		mList = (ListView) findViewById(android.R.id.list);
 		mStrDate = intent.getStringExtra(Constants.KEY_YMD);
+		mStrDate = "2010-12-29";
 		mChannel = intent.getStringExtra(Constants.KEY_CHANNEL);
-		if (mStrDate == null || isValidDate(mStrDate)) {
+		if (mStrDate == null || !isValidDate(mStrDate)) {
 			Log.w(TAG, "invalid " + mStrDate + " set to date as today");
             mStrDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
 		}
 		
 		if (mChannel == null) {
+			//mChannel = "aanoaa";
 			mChannel = "perl-kr";
 		}
 		
 		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
 		mCursor = getLogCursor(mChannel, mStrDate, null);
+		Log.d(TAG, "Cursor Count: " + mCursor.getCount());
 		mLatestEpoch = 0;
 		
 		SimpleCursorAdapter adapter = getAdapter(mCursor);
@@ -94,6 +102,7 @@ public class ViewerActivity extends ListActivity {
 		}
 		
 		if (ContextUtil.isOnline(this)) sync(buildUri(mChannel, mStrDate, mLatestEpoch), mChannel);
+		mList.setSelection(mCursor.getCount()); // insert 된 row 가 없어도 마지막으로 보내주자
 	}
 	
 	private Cursor getLogCursor(String channel, String strDate, String orderBy) {
@@ -134,6 +143,14 @@ public class ViewerActivity extends ListActivity {
 			@Override
 			public void onClick(View v) {
 				refresh();
+			}
+		});
+		
+		getContentResolver().registerContentObserver(LogSchema.CONTENT_URI, true, new ContentObserver(new Handler()) {
+			@Override
+			public void onChange(boolean selfChange) {
+				super.onChange(selfChange);
+				mList.setSelection(mCursor.getCount());
 			}
 		});
 	}

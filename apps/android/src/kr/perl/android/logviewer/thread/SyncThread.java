@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.widget.ArrayAdapter;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class SyncThread extends Thread {
 	
@@ -49,7 +50,6 @@ public class SyncThread extends Thread {
 	
 	@Override
 	public void run() {
-		mActivity.setProgressBarIndeterminateVisibility(true);
 		HttpResponse res = null;
 		try {
 			res = HttpHelper.query(mUri);
@@ -168,12 +168,13 @@ public class SyncThread extends Thread {
 
 		if (values.size() != 0) {
 			ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
-			mActivity.getContentResolver().bulkInsert(LogSchema.CONTENT_URI, hidden);
+			int count = mActivity.getContentResolver().bulkInsert(LogSchema.CONTENT_URI, hidden);
 			((SimpleCursorAdapter) mActivity.getListAdapter()).notifyDataSetChanged();
+			Toast.makeText(mActivity, "added " + count + " rows", Toast.LENGTH_SHORT).show();
+			mActivity.setProgressBarIndeterminateVisibility(false);
 		} else {
+			Toast.makeText(mActivity, mActivity.getString(R.string.log_uptodate), Toast.LENGTH_SHORT).show();
 			mHandler.post(setEmptyContentRunnable);
 		}
-		
-		mActivity.setProgressBarIndeterminateVisibility(false);
 	}
 }

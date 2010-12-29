@@ -4,6 +4,8 @@
     
     <string name="activity_viewer">IRC Log Viewer</string>
     
+    <string name="log_uptodate">up to date.</string>
+    
     <string name="btn_top">top</string>
     <string name="btn_bottom">bottom</string>
     <string name="btn_reverse">reverse</string>
