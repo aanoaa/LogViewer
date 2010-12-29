@@ -12,6 +12,7 @@ import kr.perl.android.logviewer.schema.LogSchema;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +72,8 @@ public class LogAdapter extends SimpleCursorAdapter {
         tvTime.setText(time);
         tvNickname.setText(nickname);
         tvMessage.setText(message);
+        
+        Linkify.addLinks(tvMessage, Linkify.ALL);
     	
         if (nickname.equals("")) {
         	tvNickname.setTextColor(Color.GRAY);
