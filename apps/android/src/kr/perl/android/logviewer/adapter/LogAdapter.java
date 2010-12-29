@@ -20,7 +20,12 @@ import android.widget.TextView;
 
 public class LogAdapter extends SimpleCursorAdapter {
 	
-	private int[] COLORS = new int[] { Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.RED, Color.WHITE, Color.YELLOW };
+	private int[] COLORS = new int[] {
+		-6351338, -2205865, -6337258, -2205754, -6316778, -6858786,
+		-9593066, -10397730, -13983978, -11032866, -15294633, -11018535,
+		-15294566, -11018614, -15311457, -9773481, -15327073, -4989353,
+		-12118369, -2172585, -7924065, -2188713, -6351238, -2205865, -6351338
+	};
 	
 	private Context mContext;
 	private int mResourceId;
