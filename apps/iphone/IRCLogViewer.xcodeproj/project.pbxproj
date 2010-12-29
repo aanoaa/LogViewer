@@ -1,0 +1,362 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D3623260D0F684500981E51 /* IRCLogViewerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* IRCLogViewerAppDelegate.m */; };
+		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
+		28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
+		28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */; };
+		28F335F11007B36200424DE2 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28F335F01007B36200424DE2 /* RootViewController.xib */; };
+		DF7A39EC12C8D6F70030AC53 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7A39E312C8D6F70030AC53 /* NSObject+SBJSON.m */; };
+		DF7A39ED12C8D6F70030AC53 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7A39E512C8D6F70030AC53 /* NSString+SBJSON.m */; };
+		DF7A39EE12C8D6F70030AC53 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7A39E712C8D6F70030AC53 /* SBJsonBase.m */; };
+		DF7A39EF12C8D6F70030AC53 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7A39E912C8D6F70030AC53 /* SBJsonParser.m */; };
+		DF7A39F012C8D6F70030AC53 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7A39EB12C8D6F70030AC53 /* SBJsonWriter.m */; };
+		DF7A3A7B12C90CB00030AC53 /* ChatTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF7A3A7A12C90CB00030AC53 /* ChatTableViewCell.xib */; };
+		DF7A3A7E12C90D4D0030AC53 /* ChatTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7A3A7D12C90D4D0030AC53 /* ChatTableViewCell.m */; };
+		DF7A3B5B12C929B90030AC53 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DF7A3B5A12C929B90030AC53 /* icon.png */; };
+		DF93092D12CA85B200826E47 /* IFTweetLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DF93092C12CA85B200826E47 /* IFTweetLabel.m */; };
+		DF93093312CA85C100826E47 /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = DF93093012CA85C100826E47 /* RegexKitLite.m */; };
+		DF93093412CA85C100826E47 /* RKLMatchEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = DF93093212CA85C100826E47 /* RKLMatchEnumerator.m */; };
+		DF93099F12CA91A800826E47 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DF93099D12CA91A800826E47 /* DetailViewController.m */; };
+		DF9309A012CA91A800826E47 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF93099E12CA91A800826E47 /* DetailViewController.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D3623240D0F684500981E51 /* IRCLogViewerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRCLogViewerAppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* IRCLogViewerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IRCLogViewerAppDelegate.m; sourceTree = "<group>"; };
+		1D6058910D05DD3D006BFB54 /* IRCLogViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IRCLogViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		28A0AAE50D9B0CCF005BE974 /* IRCLogViewer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRCLogViewer_Prefix.pch; sourceTree = "<group>"; };
+		28AD735F0D9D9599002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		28C286DF0D94DF7D0034E888 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		28C286E00D94DF7D0034E888 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		28F335F01007B36200424DE2 /* RootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* IRCLogViewer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "IRCLogViewer-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		DF1229B712CB4C4F00B6CE67 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = SOURCE_ROOT; };
+		DF7A39E112C8D6F70030AC53 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSON.h; path = json/JSON.h; sourceTree = "<group>"; };
+		DF7A39E212C8D6F70030AC53 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+SBJSON.h"; path = "json/NSObject+SBJSON.h"; sourceTree = "<group>"; };
+		DF7A39E312C8D6F70030AC53 /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+SBJSON.m"; path = "json/NSObject+SBJSON.m"; sourceTree = "<group>"; };
+		DF7A39E412C8D6F70030AC53 /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+SBJSON.h"; path = "json/NSString+SBJSON.h"; sourceTree = "<group>"; };
+		DF7A39E512C8D6F70030AC53 /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+SBJSON.m"; path = "json/NSString+SBJSON.m"; sourceTree = "<group>"; };
+		DF7A39E612C8D6F70030AC53 /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBJsonBase.h; path = json/SBJsonBase.h; sourceTree = "<group>"; };
+		DF7A39E712C8D6F70030AC53 /* SBJsonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJsonBase.m; path = json/SBJsonBase.m; sourceTree = "<group>"; };
+		DF7A39E812C8D6F70030AC53 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBJsonParser.h; path = json/SBJsonParser.h; sourceTree = "<group>"; };
+		DF7A39E912C8D6F70030AC53 /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJsonParser.m; path = json/SBJsonParser.m; sourceTree = "<group>"; };
+		DF7A39EA12C8D6F70030AC53 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBJsonWriter.h; path = json/SBJsonWriter.h; sourceTree = "<group>"; };
+		DF7A39EB12C8D6F70030AC53 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJsonWriter.m; path = json/SBJsonWriter.m; sourceTree = "<group>"; };
+		DF7A3A7A12C90CB00030AC53 /* ChatTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatTableViewCell.xib; sourceTree = "<group>"; };
+		DF7A3A7C12C90D4D0030AC53 /* ChatTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTableViewCell.h; sourceTree = "<group>"; };
+		DF7A3A7D12C90D4D0030AC53 /* ChatTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTableViewCell.m; sourceTree = "<group>"; };
+		DF7A3B5A12C929B90030AC53 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		DF93092B12CA85B200826E47 /* IFTweetLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IFTweetLabel.h; path = IFTweetLabel/IFTweetLabel.h; sourceTree = "<group>"; };
+		DF93092C12CA85B200826E47 /* IFTweetLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IFTweetLabel.m; path = IFTweetLabel/IFTweetLabel.m; sourceTree = "<group>"; };
+		DF93092F12CA85C100826E47 /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
+		DF93093012CA85C100826E47 /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
+		DF93093112CA85C100826E47 /* RKLMatchEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLMatchEnumerator.h; sourceTree = "<group>"; };
+		DF93093212CA85C100826E47 /* RKLMatchEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKLMatchEnumerator.m; sourceTree = "<group>"; };
+		DF93099C12CA91A800826E47 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		DF93099D12CA91A800826E47 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		DF93099E12CA91A800826E47 /* DetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				DF1229B712CB4C4F00B6CE67 /* Config.h */,
+				DF93092312CA858100826E47 /* IFTweetLabel */,
+				DF7A39BC12C8D6160030AC53 /* json */,
+				28C286DF0D94DF7D0034E888 /* RootViewController.h */,
+				28C286E00D94DF7D0034E888 /* RootViewController.m */,
+				1D3623240D0F684500981E51 /* IRCLogViewerAppDelegate.h */,
+				1D3623250D0F684500981E51 /* IRCLogViewerAppDelegate.m */,
+				DF7A3A7C12C90D4D0030AC53 /* ChatTableViewCell.h */,
+				DF7A3A7D12C90D4D0030AC53 /* ChatTableViewCell.m */,
+				DF93099C12CA91A800826E47 /* DetailViewController.h */,
+				DF93099D12CA91A800826E47 /* DetailViewController.m */,
+				DF93099E12CA91A800826E47 /* DetailViewController.xib */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* IRCLogViewer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				28A0AAE50D9B0CCF005BE974 /* IRCLogViewer_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DF7A3B5A12C929B90030AC53 /* icon.png */,
+				28F335F01007B36200424DE2 /* RootViewController.xib */,
+				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
+				DF7A3A7A12C90CB00030AC53 /* ChatTableViewCell.xib */,
+				8D1107310486CEB800E47090 /* IRCLogViewer-Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DF7A39BC12C8D6160030AC53 /* json */ = {
+			isa = PBXGroup;
+			children = (
+				DF7A39E112C8D6F70030AC53 /* JSON.h */,
+				DF7A39E212C8D6F70030AC53 /* NSObject+SBJSON.h */,
+				DF7A39E312C8D6F70030AC53 /* NSObject+SBJSON.m */,
+				DF7A39E412C8D6F70030AC53 /* NSString+SBJSON.h */,
+				DF7A39E512C8D6F70030AC53 /* NSString+SBJSON.m */,
+				DF7A39E612C8D6F70030AC53 /* SBJsonBase.h */,
+				DF7A39E712C8D6F70030AC53 /* SBJsonBase.m */,
+				DF7A39E812C8D6F70030AC53 /* SBJsonParser.h */,
+				DF7A39E912C8D6F70030AC53 /* SBJsonParser.m */,
+				DF7A39EA12C8D6F70030AC53 /* SBJsonWriter.h */,
+				DF7A39EB12C8D6F70030AC53 /* SBJsonWriter.m */,
+			);
+			name = json;
+			sourceTree = "<group>";
+		};
+		DF93092312CA858100826E47 /* IFTweetLabel */ = {
+			isa = PBXGroup;
+			children = (
+				DF93092E12CA85C100826E47 /* RegexKitLite */,
+				DF93092B12CA85B200826E47 /* IFTweetLabel.h */,
+				DF93092C12CA85B200826E47 /* IFTweetLabel.m */,
+			);
+			name = IFTweetLabel;
+			sourceTree = "<group>";
+		};
+		DF93092E12CA85C100826E47 /* RegexKitLite */ = {
+			isa = PBXGroup;
+			children = (
+				DF93092F12CA85C100826E47 /* RegexKitLite.h */,
+				DF93093012CA85C100826E47 /* RegexKitLite.m */,
+				DF93093112CA85C100826E47 /* RKLMatchEnumerator.h */,
+				DF93093212CA85C100826E47 /* RKLMatchEnumerator.m */,
+			);
+			name = RegexKitLite;
+			path = IFTweetLabel/RegexKitLite;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* IRCLogViewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "IRCLogViewer" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IRCLogViewer;
+			productName = IRCLogViewer;
+			productReference = 1D6058910D05DD3D006BFB54 /* IRCLogViewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "IRCLogViewer" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				en,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* IRCLogViewer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */,
+				28F335F11007B36200424DE2 /* RootViewController.xib in Resources */,
+				DF7A3A7B12C90CB00030AC53 /* ChatTableViewCell.xib in Resources */,
+				DF7A3B5B12C929B90030AC53 /* icon.png in Resources */,
+				DF9309A012CA91A800826E47 /* DetailViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				1D3623260D0F684500981E51 /* IRCLogViewerAppDelegate.m in Sources */,
+				28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */,
+				DF7A39EC12C8D6F70030AC53 /* NSObject+SBJSON.m in Sources */,
+				DF7A39ED12C8D6F70030AC53 /* NSString+SBJSON.m in Sources */,
+				DF7A39EE12C8D6F70030AC53 /* SBJsonBase.m in Sources */,
+				DF7A39EF12C8D6F70030AC53 /* SBJsonParser.m in Sources */,
+				DF7A39F012C8D6F70030AC53 /* SBJsonWriter.m in Sources */,
+				DF7A3A7E12C90D4D0030AC53 /* ChatTableViewCell.m in Sources */,
+				DF93092D12CA85B200826E47 /* IFTweetLabel.m in Sources */,
+				DF93093312CA85C100826E47 /* RegexKitLite.m in Sources */,
+				DF93093412CA85C100826E47 /* RKLMatchEnumerator.m in Sources */,
+				DF93099F12CA91A800826E47 /* DetailViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = IRCLogViewer_Prefix.pch;
+				INFOPLIST_FILE = "IRCLogViewer-Info.plist";
+				PRODUCT_NAME = IRCLogViewer;
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = IRCLogViewer_Prefix.pch;
+				INFOPLIST_FILE = "IRCLogViewer-Info.plist";
+				PRODUCT_NAME = IRCLogViewer;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1.2;
+				OTHER_LDFLAGS = "-licucore";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "IRCLogViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "IRCLogViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}
