@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import android.app.ListActivity;
 import android.content.ContentValues;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.SimpleCursorAdapter;
 
@@ -29,26 +30,26 @@ public class SyncThread extends Thread {
 	private Uri mUri;
 	private String mChannel;
 	
-	private Runnable threadEmptyContentRunnable = new Runnable() {
+	private final Runnable threadEmptyContentRunnable = new Runnable() {
 		public void run() {
-			mActivity.setProgressBarIndeterminateVisibility(false);
+			mActivity.setProgressBarIndeterminate(false);
 			if (mActivity.getListAdapter().getCount() == 0) {
 				mActivity.setListAdapter(new ArrayAdapter<String>(mActivity.getApplicationContext(), android.R.layout.simple_list_item_1, new String [] { mActivity.getString(R.string.error_no_log) }));
 			}
 		}
 	};
 	
-	private Runnable threadLoadingBarStart = new Runnable() {
+	private final Runnable threadLoadingBarStart = new Runnable() {
 		@Override
 		public void run() {
-			mActivity.setProgressBarIndeterminate(true);
+			mActivity.setProgressBarIndeterminateVisibility(true);
 		}
 	};
 
-	private Runnable threadLoadingBarStop = new Runnable() {
+	private final Runnable threadLoadingBarStop = new Runnable() {
 		@Override
 		public void run() {
-			mActivity.setProgressBarIndeterminate(false);
+			mActivity.setProgressBarIndeterminateVisibility(false);
 		}
 	};
 		
@@ -198,7 +199,7 @@ public class SyncThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			//runUiThread(threadLoadingBarStart);
+			runUiThread(threadLoadingBarStart);
 			runSync();
 			runUiThread(threadLoadingBarStop);
 		} catch (Exception e) {
