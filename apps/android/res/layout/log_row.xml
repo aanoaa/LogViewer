@@ -9,11 +9,11 @@
     	android:id="@+id/text1"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:textSize="11sp" 
+    	android:textSize="11dip" 
     	android:textColor="@color/gray" />
     <TextView
     	android:id="@+id/text2"
-    	android:layout_width="60sp"
+    	android:layout_width="60dip"
     	android:layout_height="wrap_content"
     	android:singleLine="true"
     	android:ellipsize="marquee"
