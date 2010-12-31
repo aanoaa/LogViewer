@@ -44,18 +44,15 @@ public class ViewerActivity extends ListActivity {
 		Log.d(TAG, "create: " + System.currentTimeMillis());
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
-		setProgressBarIndeterminateVisibility(true);
 		init();
 		addHooks();
-		new Handler().postDelayed(new Runnable() {
-			public void run() {
-				refresh();
-			}
-		}, 100);
+		refresh();
 	}
 	
 	private void sync(final Uri uri, final String channel) {
-		new SyncThread(this, uri, channel).run();
+		setProgressBarIndeterminateVisibility(true);
+		Thread thread = new SyncThread(this, uri, channel);
+		thread.start();
 	}
 	
 	/*
@@ -98,7 +95,6 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private void refresh() {
-		setProgressBarIndeterminateVisibility(true);
 		if (mCursor.getCount() != 0) {
 			mCursor.moveToLast();
 			int index = mCursor.getColumnIndex(LogSchema.CREATED_ON);
@@ -107,9 +103,8 @@ public class ViewerActivity extends ListActivity {
 		
 		if (ContextUtil.isOnline(this)) {
 			sync(buildUri(mChannel, mStrDate, mLatestEpoch), mChannel);
-		} else {
-			setProgressBarIndeterminateVisibility(false);
 		}
+		
 		mList.setSelection(mCursor.getCount()); // insert 된 row 가 없어도 마지막으로 보내주자
 	}
 	

@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.widget.Toast;
 
 public class ContextUtil {
+	
 	public static boolean isOnline(Activity activity) {
 		ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = cm.getActiveNetworkInfo();
@@ -16,5 +17,16 @@ public class ContextUtil {
 	
 	public static void toast(Activity activity, String message) {
 		Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+	}
+	
+	public static void toastOnUiTread(Activity activity, String message) {
+		final Activity a = activity;
+		final String m = message;
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				toast(a, m);
+			}
+		});
 	}
 }
