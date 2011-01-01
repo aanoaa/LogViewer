@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogAdapter;
+import kr.perl.android.logviewer.preference.LogPreference;
 import kr.perl.android.logviewer.provider.LogProvider;
 import kr.perl.android.logviewer.schema.LogSchema;
 import kr.perl.android.logviewer.thread.SyncThread;
@@ -16,12 +17,18 @@ import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -41,7 +48,6 @@ public class ViewerActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(TAG, "create: " + System.currentTimeMillis());
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
 		init();
@@ -49,6 +55,28 @@ public class ViewerActivity extends ListActivity {
 		refresh();
 	}
 	
+	@Override
+    public void onListItemClick(ListView parent, View v, int position, long id) {
+    }
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.pref_menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	    case R.id.settings:
+	    	startActivity(new Intent(getApplicationContext(), LogPreference.class));
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+
 	private void sync(final Uri uri, final String channel) {
 		Thread thread = new SyncThread(this, uri, channel);
 		thread.start();
@@ -80,8 +108,8 @@ public class ViewerActivity extends ListActivity {
 		}
 		
 		if (mChannel == null) {
-			//mChannel = "aanoaa";
-			mChannel = "perl-kr";
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			mChannel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
 		}
 		
 		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
@@ -163,9 +191,15 @@ public class ViewerActivity extends ListActivity {
 				mList.setSelection(mCursor.getCount());
 			}
 		});
+		
+		PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+				if (key.equals(getString(R.string.pref_channel))) {
+					String channel = sharedPreferences.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+					if (mChannel.equals(channel)) return;
+					// do something
+				}
+			}
+		});
 	}
-	
-	@Override
-    public void onListItemClick(ListView parent, View v, int position, long id) {
-    }
 }

@@ -1,0 +1,11 @@
+<PreferenceScreen 
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory 
+		android:title="@string/category_network">
+		<EditTextPreference
+			android:key="@string/pref_channel"
+			android:title="@string/pref_channel"
+			android:dialogTitle="@string/pref_channel"
+			android:defaultValue="@string/pref_channel_default" />
+	</PreferenceCategory>
+</PreferenceScreen>

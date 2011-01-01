@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import android.app.ListActivity;
 import android.content.ContentValues;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.SimpleCursorAdapter;
 
@@ -31,6 +30,7 @@ public class SyncThread extends Thread {
 	private String mChannel;
 	
 	private final Runnable threadEmptyContentRunnable = new Runnable() {
+		@Override
 		public void run() {
 			mActivity.setProgressBarIndeterminate(false);
 			if (mActivity.getListAdapter().getCount() == 0) {

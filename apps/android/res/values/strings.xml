@@ -3,8 +3,10 @@
     <string name="app_name">LogViewer</string>
     
     <string name="activity_viewer">IRC Log Viewer</string>
+    <string name="activity_prefrence">Preference</string>
     
     <string name="log_uptodate">up to date.</string>
+    <string name="settings">settings</string>
     
     <string name="btn_top">top</string>
     <string name="btn_bottom">bottom</string>
@@ -24,4 +26,11 @@
     <string name="error_http_io">%1$d: %2$s</string>
     <string name="error_connection">Cannot connect server</string>
     <!-- end of error message -->
+
+    <!-- preference -->
+    <string name="category_network">Network</string>
+    <string name="pref_channel">Channel</string>
+    <string name="pref_channel_hint">perl-kr</string>
+    <string name="pref_channel_default">perl-kr</string>
+    <!-- end of preference -->
 </resources>
