@@ -7,8 +7,8 @@ import java.util.List;
 
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.helper.HttpHelper;
-import kr.perl.android.logviewer.schema.LogSchema;
 import kr.perl.android.logviewer.util.ContextUtil;
+import kr.perl.provider.LogViewer.Logs;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -178,16 +178,16 @@ public class SyncThread extends Thread {
 			}
 			
 			ContentValues value = new ContentValues();
-			value.put(LogSchema.CHANNEL, mChannel);
-			value.put(LogSchema.NICKNAME, nickname);
-			value.put(LogSchema.MESSAGE, message);
-			value.put(LogSchema.CREATED_ON, created_on);
+			value.put(Logs.CHANNEL, mChannel);
+			value.put(Logs.NICKNAME, nickname);
+			value.put(Logs.MESSAGE, message);
+			value.put(Logs.CREATED_ON, created_on);
 			values.add(value);
 		}
 
 		if (values.size() != 0) {
 			ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
-			int count = mActivity.getContentResolver().bulkInsert(LogSchema.CONTENT_URI, hidden);
+			int count = mActivity.getContentResolver().bulkInsert(Logs.CONTENT_URI, hidden);
 			((SimpleCursorAdapter) mActivity.getListAdapter()).notifyDataSetChanged();
 			ContextUtil.toastOnUiTread(mActivity, "added " + count + " rows");
 		} else {

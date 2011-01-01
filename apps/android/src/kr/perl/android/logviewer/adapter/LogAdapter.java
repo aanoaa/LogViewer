@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import kr.perl.android.logviewer.R;
-import kr.perl.android.logviewer.schema.LogSchema;
+import kr.perl.provider.LogViewer.Logs;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -57,12 +57,12 @@ public class LogAdapter extends SimpleCursorAdapter {
         Cursor c = getCursor();
         c.moveToPosition(position);
         int index;
-        index = c.getColumnIndex(LogSchema.CREATED_ON);
+        index = c.getColumnIndex(Logs.CREATED_ON);
         int created_on = c.getInt(index);
         String time = new SimpleDateFormat("HH:mm").format(new Date((long) created_on * 1000));
-        index = c.getColumnIndex(LogSchema.NICKNAME);
+        index = c.getColumnIndex(Logs.NICKNAME);
         String nickname = c.getString(index);
-        index = c.getColumnIndex(LogSchema.MESSAGE);
+        index = c.getColumnIndex(Logs.MESSAGE);
         String message = c.getString(index);
 
         TextView tvTime = (TextView) row.findViewById(R.id.text1);

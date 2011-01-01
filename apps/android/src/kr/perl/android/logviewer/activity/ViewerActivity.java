@@ -10,11 +10,11 @@ import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogAdapter;
 import kr.perl.android.logviewer.preference.LogPreference;
-import kr.perl.android.logviewer.schema.LogSchema;
+import kr.perl.android.logviewer.provider.LogProvider;
 import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
-import kr.perl.provider.LogProvider;
+import kr.perl.provider.LogViewer.Logs;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -73,16 +73,10 @@ public class ViewerActivity extends ListActivity {
 	    	startActivity(new Intent(getApplicationContext(), LogPreference.class));
 	        return true;
 	    case R.id.list:
-	    	// 현재 package 중에서 channel, year, month, day 를 기준으로 네가지 목록중에서 선택하게 하자
-	    	/*
-	    	 * [Channel]
-	    	 * [Year]
-	    	 * [Month]
-	    	 * [Day]
-	    	 */
+	    	// FIXME: 이제 슬슬 구현해볼까
 	    	Intent intent = new Intent();
 	    	intent.setAction(Intent.ACTION_GET_CONTENT);
-	    	intent.setDataAndType(LogSchema.CONTENT_URI, LogSchema.CONTENT_TYPE);
+	    	intent.setDataAndType(Logs.CONTENT_URI, Logs.CONTENT_TYPE);
 	    	intent.addCategory(Intent.CATEGORY_DEFAULT);
 	    	try {
 	    		startActivity(intent);
@@ -142,7 +136,7 @@ public class ViewerActivity extends ListActivity {
 	private void refresh() {
 		if (mCursor.getCount() != 0) {
 			mCursor.moveToLast();
-			int index = mCursor.getColumnIndex(LogSchema.CREATED_ON);
+			int index = mCursor.getColumnIndex(Logs.CREATED_ON);
 			if (!mCursor.isNull(index)) mLatestEpoch = mCursor.getInt(index);
 		}
 		
@@ -154,9 +148,9 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private Cursor getLogCursor(String channel, String strDate, String orderBy) {
-		String selection = "date(" + LogSchema.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + LogSchema.CHANNEL + " = ?";
+		String selection = "date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + Logs.CHANNEL + " = ?";
 		String[] selectionArgs = new String[] { strDate, channel };
-		return managedQuery(LogSchema.CONTENT_URI, LogProvider.PROJECTION, selection, selectionArgs, orderBy);
+		return managedQuery(Logs.CONTENT_URI, LogProvider.PROJECTION, selection, selectionArgs, orderBy);
 	}
 	
 	private SimpleCursorAdapter getAdapter(Cursor cursor) {
@@ -164,7 +158,7 @@ public class ViewerActivity extends ListActivity {
 			this, 
 			R.layout.log_row, 
 			cursor, 
-			new String[] { LogSchema.CREATED_ON, LogSchema.NICKNAME, LogSchema.MESSAGE }, 
+			new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
 			new int[] { R.id.text1, R.id.text2, R.id.text3 }
 		);
 	}
@@ -202,7 +196,7 @@ public class ViewerActivity extends ListActivity {
 			}
 		});
 		
-		getContentResolver().registerContentObserver(LogSchema.CONTENT_URI, true, new ContentObserver(new Handler()) {
+		getContentResolver().registerContentObserver(Logs.CONTENT_URI, true, new ContentObserver(new Handler()) {
 			@Override
 			public void onChange(boolean selfChange) {
 				super.onChange(selfChange);

@@ -12,7 +12,7 @@
         <!-- Content Provider -->
         <provider 
             android:name=".provider.LogProvider"
-            android:authorities="kr.perl.provider.logprovider" />
+            android:authorities="kr.perl.provider.LogViewer" />
         <!-- end of Content Provider -->
 
         <!-- Activities -->

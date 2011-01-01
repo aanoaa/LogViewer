@@ -1,9 +1,9 @@
-package kr.perl.provider;
+package kr.perl.android.logviewer.provider;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import kr.perl.android.logviewer.schema.LogSchema;
+import kr.perl.provider.LogViewer.Logs;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -22,32 +22,28 @@ import android.util.Log;
 public class LogProvider extends ContentProvider {
 
     private static final String     TAG         = "LogProvider";
-    public static final String[]    PROJECTION  = new String[] { LogSchema._ID, LogSchema.CHANNEL, LogSchema.NICKNAME, LogSchema.MESSAGE, LogSchema.CREATED_ON };
+    public static final String[]    PROJECTION  = new String[] { Logs._ID, Logs.CHANNEL, Logs.NICKNAME, Logs.MESSAGE, Logs.CREATED_ON };
 
     private static final String DATABASE_NAME       = "log.db";
     private static final int    DATABASE_VERSION    = 1;
 
-    private static final int LOG = 1;
-    private static final int LOG_ID = 2;
-    private static final int CHANNEL_ID = 3;
-    private static final int YEAR_ID = 4;
-    private static final int MONTH_ID = 5;
-    private static final int DAY_ID = 6;
+    private static final int LOG = 1;       // for all
+    private static final int LOG_ID = 2;    // for a row
 
     private static final UriMatcher     sUriMatcher;
-    private static Map<String, String>  sLogSchemaProjectionMap;
+    private static Map<String, String>  sLogsProjectionMap;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(LogSchema.AUTHORITY, LogSchema.TABLE_NAME, LOG);
-        sUriMatcher.addURI(LogSchema.AUTHORITY, LogSchema.TABLE_NAME + "/#", LOG_ID);
-        
-        sLogSchemaProjectionMap = new HashMap<String, String>();
-        sLogSchemaProjectionMap.put(LogSchema._ID,          LogSchema._ID);
-        sLogSchemaProjectionMap.put(LogSchema.CHANNEL,      LogSchema.CHANNEL);
-        sLogSchemaProjectionMap.put(LogSchema.NICKNAME,     LogSchema.NICKNAME);
-        sLogSchemaProjectionMap.put(LogSchema.MESSAGE,      LogSchema.MESSAGE);
-        sLogSchemaProjectionMap.put(LogSchema.CREATED_ON,   LogSchema.CREATED_ON);
+        sUriMatcher.addURI(Logs.AUTHORITY, Logs.TABLE_NAME, LOG);
+        sUriMatcher.addURI(Logs.AUTHORITY, Logs.TABLE_NAME + "/#", LOG_ID);
+
+        sLogsProjectionMap = new HashMap<String, String>();
+        sLogsProjectionMap.put(Logs._ID,          Logs._ID);
+        sLogsProjectionMap.put(Logs.CHANNEL,      Logs.CHANNEL);
+        sLogsProjectionMap.put(Logs.NICKNAME,     Logs.NICKNAME);
+        sLogsProjectionMap.put(Logs.MESSAGE,      Logs.MESSAGE);
+        sLogsProjectionMap.put(Logs.CREATED_ON,   Logs.CREATED_ON);
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -57,19 +53,19 @@ public class LogProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-        	db.execSQL("CREATE TABLE " + LogSchema.TABLE_NAME + " ("
-                + LogSchema._ID +           " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + LogSchema.CHANNEL +       " TEXT NOT NULL,"
-                + LogSchema.NICKNAME +      " TEXT,"
-                + LogSchema.MESSAGE +       " TEXT,"
-                + LogSchema.CREATED_ON +    " INTEGER NOT NULL"
+        	db.execSQL("CREATE TABLE " + Logs.TABLE_NAME + " ("
+                + Logs._ID +           " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + Logs.CHANNEL +       " TEXT NOT NULL,"
+                + Logs.NICKNAME +      " TEXT,"
+                + Logs.MESSAGE +       " TEXT,"
+                + Logs.CREATED_ON +    " INTEGER NOT NULL"
                 + ");");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXIST " + LogSchema.TABLE_NAME + ";"); // Expedients
+            db.execSQL("DROP TABLE IF EXIST " + Logs.TABLE_NAME + ";"); // Expedients
             onCreate(db);
         }
     }
@@ -85,16 +81,16 @@ public class LogProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        qb.setTables(LogSchema.TABLE_NAME);
+        qb.setTables(Logs.TABLE_NAME);
 
         switch (sUriMatcher.match(uri)) {
             case LOG:
-                qb.setProjectionMap(sLogSchemaProjectionMap);
+                qb.setProjectionMap(sLogsProjectionMap);
                 break;
 
             case LOG_ID:
-                qb.setProjectionMap(sLogSchemaProjectionMap);
-                qb.appendWhere(LogSchema._ID + "=" + uri.getPathSegments().get(1));
+                qb.setProjectionMap(sLogsProjectionMap);
+                qb.appendWhere(Logs._ID + "=" + uri.getPathSegments().get(1));
                 break;
 
             default:
@@ -103,7 +99,7 @@ public class LogProvider extends ContentProvider {
 
             String orderBy;
             if (TextUtils.isEmpty(sortOrder)) {
-                orderBy = LogSchema.DEFAULT_SORT_ORDER;
+                orderBy = Logs.DEFAULT_SORT_ORDER;
             } else {
                 orderBy = sortOrder;
             }
@@ -119,10 +115,10 @@ public class LogProvider extends ContentProvider {
     public String getType(Uri uri) {
         switch (sUriMatcher.match(uri)) {
             case LOG:
-                return LogSchema.CONTENT_TYPE;
+                return Logs.CONTENT_TYPE;
 
             case LOG_ID:
-                return LogSchema.CONTENT_ITEM_TYPE;
+                return Logs.CONTENT_ITEM_TYPE;
 
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -137,9 +133,9 @@ public class LogProvider extends ContentProvider {
     	try {
     		db.beginTransaction();
         	for (ContentValues value : values) {
-            	long rowId = db.insert(LogSchema.TABLE_NAME, LogSchema.CHANNEL, value);
+            	long rowId = db.insert(Logs.TABLE_NAME, Logs.CHANNEL, value);
             	if (rowId > 0) {
-                    historyUri = ContentUris.withAppendedId(LogSchema.CONTENT_URI, rowId);
+                    historyUri = ContentUris.withAppendedId(Logs.CONTENT_URI, rowId);
                 }
         	}
         	db.setTransactionSuccessful();
@@ -167,19 +163,19 @@ public class LogProvider extends ContentProvider {
             values = new ContentValues();
         }
 
-        if (values.containsKey(LogSchema.CHANNEL) == false) {
+        if (values.containsKey(Logs.CHANNEL) == false) {
             Resources r = Resources.getSystem();
-            values.put(LogSchema.CHANNEL, r.getString(android.R.string.untitled));
+            values.put(Logs.CHANNEL, r.getString(android.R.string.untitled));
         }
 
-        if (values.containsKey(LogSchema.CREATED_ON) == false) {
-            values.put(LogSchema.CREATED_ON, System.currentTimeMillis());
+        if (values.containsKey(Logs.CREATED_ON) == false) {
+            values.put(Logs.CREATED_ON, System.currentTimeMillis());
         }
 
         SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-        long rowId = db.insert(LogSchema.TABLE_NAME, LogSchema.CHANNEL, values);
+        long rowId = db.insert(Logs.TABLE_NAME, Logs.CHANNEL, values);
         if (rowId > 0) {
-            Uri historyUri = ContentUris.withAppendedId(LogSchema.CONTENT_URI, rowId);
+            Uri historyUri = ContentUris.withAppendedId(Logs.CONTENT_URI, rowId);
             getContext().getContentResolver().notifyChange(historyUri, null);
             return historyUri;
         }
@@ -193,12 +189,12 @@ public class LogProvider extends ContentProvider {
         int count;
         switch (sUriMatcher.match(uri)) {
             case LOG:
-                count = db.delete(LogSchema.TABLE_NAME, where, whereArgs);
+                count = db.delete(Logs.TABLE_NAME, where, whereArgs);
                 break;
 
             case LOG_ID:
                 String logId = uri.getPathSegments().get(1);
-                count = db.delete(LogSchema.TABLE_NAME, LogSchema._ID + "=" + logId 
+                count = db.delete(Logs.TABLE_NAME, Logs._ID + "=" + logId 
                     + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
                 break;
 
@@ -216,12 +212,12 @@ public class LogProvider extends ContentProvider {
         int count;
         switch (sUriMatcher.match(uri)) {
             case LOG:
-                count = db.update(LogSchema.TABLE_NAME, values, where, whereArgs);
+                count = db.update(Logs.TABLE_NAME, values, where, whereArgs);
                 break;
 
             case LOG_ID:
                 String logId = uri.getPathSegments().get(1);
-                count = db.update(LogSchema.TABLE_NAME, values, LogSchema._ID + "=" + logId
+                count = db.update(Logs.TABLE_NAME, values, Logs._ID + "=" + logId
                     + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
                 break;
 
