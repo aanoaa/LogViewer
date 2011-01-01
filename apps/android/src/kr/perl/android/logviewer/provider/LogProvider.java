@@ -32,7 +32,7 @@ public class LogProvider extends ContentProvider {
 
     private static final UriMatcher     sUriMatcher;
     private static Map<String, String>  sLogsProjectionMap;
-
+    
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(Logs.AUTHORITY, Logs.TABLE_NAME, LOG);

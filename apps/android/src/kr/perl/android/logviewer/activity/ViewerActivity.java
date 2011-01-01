@@ -178,6 +178,7 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private void refresh() {
+		if (SyncThread.isQuery()) return;
 		if (mCursor.getCount() != 0) {
 			mCursor.moveToLast();
 			int index = mCursor.getColumnIndex(Logs.CREATED_ON);

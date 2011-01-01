@@ -28,7 +28,16 @@ public class SyncThread extends Thread {
 	private ListActivity mActivity;
 	private Uri mUri;
 	private String mChannel;
+	private static boolean mQuery;
 	
+	public static boolean isQuery() {
+		return mQuery;
+	}
+
+	public static void setQuery(boolean flag) {
+		SyncThread.mQuery = flag;
+	}
+
 	private final Runnable threadEmptyContentRunnable = new Runnable() {
 		@Override
 		public void run() {
@@ -57,6 +66,7 @@ public class SyncThread extends Thread {
 		mActivity = activity;
 		mUri = uri;
 		mChannel = channel;
+		setQuery(false);
 	}
 	
 	private void runUiThread(Runnable thread) {
@@ -189,7 +199,11 @@ public class SyncThread extends Thread {
 			ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
 			int count = mActivity.getContentResolver().bulkInsert(Logs.CONTENT_URI, hidden);
 			ContextUtil.toastOnUiTread(mActivity, String.format(mActivity.getString(R.string.notify_add_row), count));
-			((SimpleCursorAdapter) mActivity.getListAdapter()).notifyDataSetChanged();
+			runUiThread(new Runnable() {
+				public void run() {
+					((SimpleCursorAdapter) mActivity.getListAdapter()).notifyDataSetChanged();
+				}
+			});
 		} else {
 			ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.log_uptodate));
 			runUiThread(threadEmptyContentRunnable);
@@ -198,6 +212,7 @@ public class SyncThread extends Thread {
 	
 	@Override
 	public void run() {
+		setQuery(true);
 		try {
 			runUiThread(threadLoadingBarStart);
 			if (ContextUtil.isOnline(mActivity)) {
@@ -209,5 +224,6 @@ public class SyncThread extends Thread {
 		} finally {
 			runUiThread(threadLoadingBarStop);
 		}
+		setQuery(false);
 	}
 }
