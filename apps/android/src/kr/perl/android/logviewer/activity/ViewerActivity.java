@@ -10,11 +10,11 @@ import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogAdapter;
 import kr.perl.android.logviewer.preference.LogPreference;
-import kr.perl.android.logviewer.provider.LogProvider;
 import kr.perl.android.logviewer.schema.LogSchema;
 import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
+import kr.perl.provider.LogProvider;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -71,6 +71,24 @@ public class ViewerActivity extends ListActivity {
 	    switch (item.getItemId()) {
 	    case R.id.settings:
 	    	startActivity(new Intent(getApplicationContext(), LogPreference.class));
+	        return true;
+	    case R.id.list:
+	    	// 현재 package 중에서 channel, year, month, day 를 기준으로 네가지 목록중에서 선택하게 하자
+	    	/*
+	    	 * [Channel]
+	    	 * [Year]
+	    	 * [Month]
+	    	 * [Day]
+	    	 */
+	    	Intent intent = new Intent();
+	    	intent.setAction(Intent.ACTION_GET_CONTENT);
+	    	intent.setDataAndType(LogSchema.CONTENT_URI, LogSchema.CONTENT_TYPE);
+	    	intent.addCategory(Intent.CATEGORY_DEFAULT);
+	    	try {
+	    		startActivity(intent);
+	    	} catch(Exception e) {
+	    		ContextUtil.toast(this, "Cannot found activity");
+	    	}
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);

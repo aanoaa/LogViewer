@@ -12,13 +12,13 @@
         <!-- Content Provider -->
         <provider 
             android:name=".provider.LogProvider"
-            android:authorities="kr.perl.android.logviewer.provider.logprovider" />
+            android:authorities="kr.perl.provider.logprovider" />
         <!-- end of Content Provider -->
 
         <!-- Activities -->
         <activity
             android:name=".activity.ViewerActivity"
-            android:label="@string/app_name"
+            android:label="@string/activity_viewer"
             clearTaskOnLaunch="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,18 +28,21 @@
         
         <activity
             android:name=".activity.LogListActivity"
-            android:label="@string/app_name">
-            <!-- 
+            android:label="@string/activity_list">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.ACTION_GET_CONTENT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.kr.perl.android.logviewer.log" />
             </intent-filter>
-             -->
         </activity>
         
         <activity
         	android:name=".preference.LogPreference"
         	android:label="@string/activity_prefrence">
+        	<intent-filter>
+        		<action android:name="android.intent.action.ACTION_VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <!-- end of Activities -->
 

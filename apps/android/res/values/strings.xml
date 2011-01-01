@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LogViewer</string>
+    <string name="package_name">kr.perl.android.logviewer</string>
     
     <string name="activity_viewer">IRC Log Viewer</string>
+    <string name="activity_list">List</string>
     <string name="activity_prefrence">Preference</string>
     
     <string name="log_uptodate">up to date.</string>
     <string name="settings">settings</string>
+    <string name="list">list</string>
     
     <string name="btn_top">top</string>
     <string name="btn_bottom">bottom</string>

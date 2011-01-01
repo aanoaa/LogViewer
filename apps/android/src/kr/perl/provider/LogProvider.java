@@ -1,4 +1,4 @@
-package kr.perl.android.logviewer.provider;
+package kr.perl.provider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +27,12 @@ public class LogProvider extends ContentProvider {
     private static final String DATABASE_NAME       = "log.db";
     private static final int    DATABASE_VERSION    = 1;
 
-    private static final int LOG = 1;       // for all
-    private static final int LOG_ID = 2;    // for a row
+    private static final int LOG = 1;
+    private static final int LOG_ID = 2;
+    private static final int CHANNEL_ID = 3;
+    private static final int YEAR_ID = 4;
+    private static final int MONTH_ID = 5;
+    private static final int DAY_ID = 6;
 
     private static final UriMatcher     sUriMatcher;
     private static Map<String, String>  sLogSchemaProjectionMap;
@@ -37,7 +41,7 @@ public class LogProvider extends ContentProvider {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(LogSchema.AUTHORITY, LogSchema.TABLE_NAME, LOG);
         sUriMatcher.addURI(LogSchema.AUTHORITY, LogSchema.TABLE_NAME + "/#", LOG_ID);
-
+        
         sLogSchemaProjectionMap = new HashMap<String, String>();
         sLogSchemaProjectionMap.put(LogSchema._ID,          LogSchema._ID);
         sLogSchemaProjectionMap.put(LogSchema.CHANNEL,      LogSchema.CHANNEL);
