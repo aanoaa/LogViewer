@@ -206,7 +206,7 @@ public class SyncThread extends Thread {
 				ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.error_connection));
 			}
 			runUiThread(threadLoadingBarStop);
-		} catch (Exception e) {
+		} finally {
 			runUiThread(threadLoadingBarStop);
 		}
 	}
