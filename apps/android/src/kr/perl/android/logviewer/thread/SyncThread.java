@@ -188,8 +188,8 @@ public class SyncThread extends Thread {
 		if (values.size() != 0) {
 			ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
 			int count = mActivity.getContentResolver().bulkInsert(Logs.CONTENT_URI, hidden);
+			ContextUtil.toastOnUiTread(mActivity, String.format(mActivity.getString(R.string.notify_add_row), count));
 			((SimpleCursorAdapter) mActivity.getListAdapter()).notifyDataSetChanged();
-			ContextUtil.toastOnUiTread(mActivity, "added " + count + " rows");
 		} else {
 			ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.log_uptodate));
 			runUiThread(threadEmptyContentRunnable);
@@ -200,7 +200,11 @@ public class SyncThread extends Thread {
 	public void run() {
 		try {
 			runUiThread(threadLoadingBarStart);
-			runSync();
+			if (ContextUtil.isOnline(mActivity)) {
+				runSync();
+			} else {
+				ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.error_connection));
+			}
 			runUiThread(threadLoadingBarStop);
 		} catch (Exception e) {
 			runUiThread(threadLoadingBarStop);

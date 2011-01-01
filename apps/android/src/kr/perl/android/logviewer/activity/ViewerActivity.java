@@ -10,7 +10,6 @@ import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogAdapter;
 import kr.perl.android.logviewer.preference.LogPreference;
-import kr.perl.android.logviewer.provider.LogProvider;
 import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
@@ -18,7 +17,6 @@ import kr.perl.provider.LogViewer.Logs;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -38,6 +36,8 @@ import android.widget.SimpleCursorAdapter;
 public class ViewerActivity extends ListActivity {
 	
 	private static final String TAG = "ViewerActivity";
+	private static final String[] PROJECTION = new String[] { Logs._ID, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
+	private static final String SELECTION = "date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + Logs.CHANNEL + " = ?";
 	
 	private String mChannel;
 	private String mStrDate;
@@ -48,11 +48,73 @@ public class ViewerActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Intent intent = getIntent();
+		String action = intent.getAction();
+		if (Intent.ACTION_VIEW.equals(action)) {
+			mStrDate = intent.getStringExtra(Constants.KEY_YMD);
+			mChannel = intent.getStringExtra(Constants.KEY_CHANNEL);
+			if (mStrDate == null || !isValidDate(mStrDate) || mChannel == null) {
+				Log.e(TAG, "Invalid argument");
+				finish();
+				return;
+			}
+		} else if (Intent.ACTION_MAIN.equals(action)) {
+			mStrDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			mChannel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+		} else {
+			Log.e(TAG, "Unknown action");
+			finish();
+			return;
+		}
+		
+		if (intent.getData() == null) {
+			intent.setData(Logs.CONTENT_URI);
+		}
+		
+		mCursor = managedQuery(getIntent().getData(), PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
 		init();
 		addHooks();
+		
+		SimpleCursorAdapter adapter = new LogAdapter(
+			this, 
+			R.layout.log_row, 
+			mCursor, 
+			new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
+			new int[] { R.id.text1, R.id.text2, R.id.text3 }
+		);
+		
+		setListAdapter(adapter);
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		String channel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+		if (!channel.equals(mChannel)) {
+			mChannel = channel;
+			setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
+			mCursor = managedQuery(getIntent().getData(), PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
+			SimpleCursorAdapter adapter = new LogAdapter(
+					this, 
+					R.layout.log_row, 
+					mCursor, 
+					new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
+					new int[] { R.id.text1, R.id.text2, R.id.text3 }
+			);
+			
+			setListAdapter(adapter);
+		}
+		
 		refresh();
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
 	}
 	
 	@Override
@@ -88,7 +150,7 @@ public class ViewerActivity extends ListActivity {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-
+	
 	private void sync(final Uri uri, final String channel) {
 		Thread thread = new SyncThread(this, uri, channel);
 		thread.start();
@@ -110,27 +172,9 @@ public class ViewerActivity extends ListActivity {
     }
 	
 	private void init() {
-		Intent intent = getIntent();
 		mList = (ListView) findViewById(android.R.id.list);
-		mStrDate = intent.getStringExtra(Constants.KEY_YMD);
-		mChannel = intent.getStringExtra(Constants.KEY_CHANNEL);
-		if (mStrDate == null || !isValidDate(mStrDate)) {
-			Log.w(TAG, "invalid " + mStrDate + " set to date as today");
-            mStrDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-		}
-		
-		if (mChannel == null) {
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			mChannel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
-		}
-		
-		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
-		mCursor = getLogCursor(mChannel, mStrDate, null);
 		mLatestEpoch = 0;
-		
-		SimpleCursorAdapter adapter = getAdapter(mCursor);
-		adapter.notifyDataSetChanged();
-		setListAdapter(adapter);
+		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
 	}
 	
 	private void refresh() {
@@ -140,30 +184,12 @@ public class ViewerActivity extends ListActivity {
 			if (!mCursor.isNull(index)) mLatestEpoch = mCursor.getInt(index);
 		}
 		
-		if (ContextUtil.isOnline(this)) {
-			sync(buildUri(mChannel, mStrDate, mLatestEpoch), mChannel);
-		}
-		
+		sync(buildUri(mChannel, mStrDate, mLatestEpoch), mChannel);
 		mList.setSelection(mCursor.getCount()); // insert 된 row 가 없어도 마지막으로 보내주자
 	}
 	
-	private Cursor getLogCursor(String channel, String strDate, String orderBy) {
-		String selection = "date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + Logs.CHANNEL + " = ?";
-		String[] selectionArgs = new String[] { strDate, channel };
-		return managedQuery(Logs.CONTENT_URI, LogProvider.PROJECTION, selection, selectionArgs, orderBy);
-	}
-	
-	private SimpleCursorAdapter getAdapter(Cursor cursor) {
-		return new LogAdapter(
-			this, 
-			R.layout.log_row, 
-			cursor, 
-			new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
-			new int[] { R.id.text1, R.id.text2, R.id.text3 }
-		);
-	}
-	
 	private Uri buildUri(String channel, String strDate, int epoch) {
+		// FIXME: UriMatcher 추가하고 URI 로 해결하자
 		String ymd[] = strDate.split("-");
 		ArrayList<String> pieces = new ArrayList<String>(ymd.length);
 		for (String item : ymd) {
@@ -201,16 +227,6 @@ public class ViewerActivity extends ListActivity {
 			public void onChange(boolean selfChange) {
 				super.onChange(selfChange);
 				mList.setSelection(mCursor.getCount());
-			}
-		});
-		
-		PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
-			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-				if (key.equals(getString(R.string.pref_channel))) {
-					String channel = sharedPreferences.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
-					if (mChannel.equals(channel)) return;
-					// do something
-				}
 			}
 		});
 	}
