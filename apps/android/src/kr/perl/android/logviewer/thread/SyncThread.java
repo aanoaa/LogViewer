@@ -220,7 +220,6 @@ public class SyncThread extends Thread {
 			} else {
 				ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.error_connection));
 			}
-			runUiThread(threadLoadingBarStop);
 		} finally {
 			runUiThread(threadLoadingBarStop);
 		}
