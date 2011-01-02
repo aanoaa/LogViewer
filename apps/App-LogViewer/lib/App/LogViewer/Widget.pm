@@ -70,6 +70,20 @@ sub _build__app {
         };
     };
 
+    my @cells;
+    my @columns = $app->find('talk-treeview')->get_columns;
+
+    @cells = $columns[0]->get_cells;
+    $cells[0]->set('yalign', 0);
+
+    @cells = $columns[1]->get_cells;
+    $cells[0]->set('xalign', 1);
+    $cells[0]->set('yalign', 0);
+
+    @cells = $columns[2]->get_cells;
+    $cells[0]->set('wrap-mode', 'char');
+    $cells[0]->set('wrap-width', 300);
+
     return $app;
 }
 
