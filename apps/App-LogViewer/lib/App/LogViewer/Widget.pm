@@ -5,45 +5,14 @@ use Moose;
 use MooseX::Configuration;
 use autodie;
 use namespace::autoclean;
-use JSON;
-use DateTime;
-use LWP::Simple;
 use Glib qw(TRUE FALSE);
 use Acme::Gtk2::Ex::Builder;
-
-has url => (
-    is         => 'rw',
-    isa        => 'Str',
-    default    => q{},
-);
-
-has channel => (
-    is         => 'rw',
-    isa        => 'Str',
-    default    => q{},
-);
-
-has date => (
-    is         => 'rw',
-    isa        => 'DateTime',
-    default    => sub { DateTime->now },
-);
 
 has _app => (
     is         => 'ro',
     isa        => 'Acme::Gtk2::Ex::Builder',
     lazy_build => 1,
 );
-
-sub BUILD {
-    my $self = shift;
-    $self->_update_talk;
-    return $self;
-}
-
-after url     => sub { $_[0]->_update_talk if $_[1] };
-after channel => sub { $_[0]->_update_talk if $_[1] };
-after date    => sub { $_[0]->_update_talk if $_[1] };
 
 sub _build__app {
     my $self = shift;
@@ -87,52 +56,8 @@ sub _build__app {
     return $app;
 }
 
-sub talk { $_[0]->_app->find('talk-vbox') }
-
-sub _update_talk {
-    my $self = shift;
-
-    return unless $self->url;
-    return unless $self->channel;
-    return unless $self->date;
-
-    my $url     = $self->url;
-    my $channel = $self->channel;
-    my $year    = $self->date->year;
-    my $month   = $self->date->month;
-    my $day     = $self->date->day;
-
-    my $content = get($url . "/$channel/$year/$month/$day");
-    return unless defined $content;
-
-    my $messages = decode_json($content)->{data};
-
-    my @formatted = map {
-        my $dt = DateTime->from_epoch(
-            epoch     => $_->[1],
-            time_zone => 'Asia/Seoul',
-        );
-
-        my $timestamp = $dt->hms;
-        my $nick = $_->[0];
-        $nick =~ s/_+$//;
-
-        my $talk = $_->[2];
-        $talk =~ s/&/&amp;/g;
-        $talk =~ s/</&lt;/g;
-        $talk =~ s/>/&gt;/g;
-        #$talk =~ s{(https?:\S*?)}{<a href="$1">$1</a>}g;
-        #$talk .= "Go to the <a href=\"http://www.gtk.org\" title=\"&lt;i&gt;Our&lt;/i&gt; website\">GTK+ website</a> for more...";
-
-        [
-            $dt->hms,
-            qq{<span weight="bold">$nick</span>},
-            $talk,
-        ];
-    } @$messages;
-
-    @{ $self->_app->find('talk-treeview')->{data} } = @formatted;
-}
+sub vbox     { $_[0]->_app->find('talk-vbox')     }
+sub treeview { $_[0]->_app->find('talk-treeview') }
 
 __PACKAGE__->meta->make_immutable;
 no Moose;

@@ -15,6 +15,15 @@ has connect_host => (
     documentation => 'Host to connect',
 );
 
+has cache_dir => (
+    is            => 'ro',
+    isa           => 'Str',
+    default       => q{},
+    section       => 'cache',
+    key           => 'dir',
+    documentation => 'Cache directory',
+);
+
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;
@@ -29,9 +38,20 @@ __END__
     )
     
     say $config->connect_host;
+    say $config->cache_dir;
 
 
 =head1 DESCRIPTION
 
 This module is used for C<App::LogViewer>.
 See C<App::LogViewer> and C<LogViewer::Web>.
+
+
+=method connect_host
+
+Get connect host
+
+
+=method cache_dir
+
+Get cache directory
