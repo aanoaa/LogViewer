@@ -79,7 +79,7 @@ public class ViewerActivity extends ListActivity {
 		addHooks();
 		
 		SimpleCursorAdapter adapter = new LogAdapter(
-			this, 
+			this,
 			R.layout.log_row, 
 			mCursor, 
 			new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
@@ -178,6 +178,7 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private void refresh() {
+		mList.setSelection(mCursor.getCount()); // refresh 누르면 바닥으로..
 		if (SyncThread.isQuery()) return;
 		if (mCursor.getCount() != 0) {
 			mCursor.moveToLast();
@@ -186,7 +187,6 @@ public class ViewerActivity extends ListActivity {
 		}
 		
 		sync(buildUri(mChannel, mStrDate, mLatestEpoch), mChannel);
-		mList.setSelection(mCursor.getCount()); // insert 된 row 가 없어도 마지막으로 보내주자
 	}
 	
 	private Uri buildUri(String channel, String strDate, int epoch) {
