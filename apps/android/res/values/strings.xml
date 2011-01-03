@@ -6,6 +6,7 @@
     <string name="activity_viewer">IRC Log Viewer</string>
     <string name="activity_list">List</string>
     <string name="activity_prefrence">Preference</string>
+    <string name="activity_gesture">Gesture</string>
     
     <string name="log_uptodate">up to date.</string>
     <string name="settings">settings</string>

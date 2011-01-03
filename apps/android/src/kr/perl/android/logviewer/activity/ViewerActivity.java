@@ -223,6 +223,15 @@ public class ViewerActivity extends ListActivity {
 			}
 		});
 		
+		button = (Button) findViewById(R.id.gesture_button);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(ViewerActivity.this, GestureActivity.class);
+				startActivity(intent);
+			}
+		});
+		
 		getContentResolver().registerContentObserver(Logs.CONTENT_URI, true, new ContentObserver(new Handler()) {
 			@Override
 			public void onChange(boolean selfChange) {
