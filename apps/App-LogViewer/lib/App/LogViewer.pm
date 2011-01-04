@@ -25,15 +25,21 @@ has config_file => (
 );
 
 has channel => (
-    is         => 'rw',
-    isa        => 'Str',
-    default    => q{},
+    is      => 'rw',
+    isa     => 'Str',
+    default => q{},
 );
 
 has date => (
-    is         => 'rw',
-    isa        => 'DateTime',
-    default    => sub { DateTime->now },
+    is      => 'rw',
+    isa     => 'DateTime',
+    default => sub { DateTime->now },
+);
+
+has force_reload => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
 );
 
 has _config => (
@@ -60,8 +66,9 @@ sub BUILD {
     return $self;
 }
 
-after channel => sub { $_[0]->_update_talk if $_[1] };
-after date    => sub { $_[0]->_update_talk if $_[1] };
+after channel      => sub { $_[0]->_update_talk if $_[1] };
+after date         => sub { $_[0]->_update_talk if $_[1] };
+after force_reload => sub { $_[0]->_update_talk if $_[1] };
 
 sub _update_talk {
     my $self = shift;
@@ -80,11 +87,19 @@ sub _update_talk {
     # Check cache
     #
     my $key = "/$channel/$year/$month/$day";
-    my $content = $self->_cache->load($key);
-    if (!defined $content) {
-        my $content = get($url . $key);
-        return unless defined $content;
+    my $content;
+    if ($self->force_reload) {
+        $content = get($url . $key);
+        warn "cannot get [$key] log\n", return unless defined $content;
         $self->_cache->save($key, $content);
+    }
+    else {
+        $content = $self->_cache->load($key);
+        if (!defined $content) {
+            $content = get($url . $key);
+            warn "cannot get [$key] log\n", return unless defined $content;
+            $self->_cache->save($key, $content);
+        }
     }
 
     my $messages = decode_json($content)->{data};
