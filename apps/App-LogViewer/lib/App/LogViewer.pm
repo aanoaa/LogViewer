@@ -173,6 +173,22 @@ __END__
     );
 
 
+=head1 CONFIGURATION
+
+You need config file for L<App::LogViewer>.
+The path of default config file is C<~/.logviewer/config.ini>.
+
+    ;
+    ; /home/keedi/.logviewer/config.ini
+    ;
+    
+    [connect]
+    host = http://irclog.your.host
+    
+    [cache]
+    dir = /home/keedi/.logviewer/cache
+
+
 =attr config_file
 
 String.
