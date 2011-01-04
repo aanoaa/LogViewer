@@ -5,6 +5,8 @@ use utf8;
 use strict;
 use warnings;
 use autodie;
+use FindBin qw($Bin);
+use File::Spec::Functions;
 use Readonly;
 use DateTime;
 use App::LogViewer;
@@ -12,6 +14,7 @@ use Glib qw(TRUE FALSE);
 use Gtk2 '-init';
 use Acme::Gtk2::Ex::Builder;
 
+Readonly::Scalar my $ICON_PATH    => catfile($Bin, 'icon.png');
 Readonly::Scalar my $LABEL_PREFIX => q{<span size="large">IRC log</span>};
 Readonly::Scalar my $LABEL_FORMAT => sprintf(
     q{%s<span size="large">: <b><i>%%s</i></b></span>},
@@ -29,6 +32,7 @@ my $app = build {
         set  title          => 'Seoul.pm irc log viewer';
         set  default_size   => 640, 480;
         set  position       => 'center';
+        set  icon_from_file => $ICON_PATH;
         on   delete_event   => sub { Gtk2->main_quit };
 
         widget VBox => contain {
