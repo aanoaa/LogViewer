@@ -54,8 +54,11 @@ my $app = build {
                 };
                 widget Button => contain {
                     set label   => 'force refresh';
-                    on  clicked => \&forece_refresh_log, $lv;
+                    on  clicked => \&force_refresh_log, $lv;
                 };
+            };
+            widget $lv->get_talk_vbox => contain {
+                info packing => TRUE, TRUE, 1, 'start';
             };
         };
     };
@@ -63,7 +66,6 @@ my $app = build {
 
 update_label($lv);
 
-$app->find('vbox')->pack_start($lv->get_talk_vbox, TRUE, TRUE, 1);
 $app->find('window')->show_all;
 
 Gtk2->main;

@@ -6,6 +6,7 @@ use MooseX::Configuration;
 use autodie;
 use namespace::autoclean;
 use Glib qw(TRUE FALSE);
+use Gtk2::SimpleList;
 use Acme::Gtk2::Ex::Builder;
 
 has _app => (
