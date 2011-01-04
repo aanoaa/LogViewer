@@ -166,18 +166,43 @@ __END__
 
     use App::LogViewer;
     
-    my $lv = App::LogViewer->new;
-    say $lv->config->connect_host;
+    my $lv = App::LogViewer->new(
+        config_file => '/home/keedi/.logviewer/config.ini',
+        channel     => 'perl-kr',
+        date        => DateTime->now(time_zone => 'Asia/Seoul'),
+    );
 
 
 =attr config_file
 
+String.
 Specify config file to read.
 Default config file is C<~/.logviewer/config.ini>.
 
-    my $lv = App::LogViewer->new(
-        config_file => 'my-config.ini',
-    );
+
+=attr channel
+
+String.
+Specify the logged channel.
 
 
-=method get_talk_widget
+=attr date
+
+DateTime object.
+Specify the logged date.
+
+
+=attr force_reload
+
+Bool.
+Forece reload the content and update the cache.
+
+
+=method get_talk_vbox
+
+Get L<Gtk2::VBox> which contains talk treeview.
+
+
+=method get_talk_treeview
+
+Get L<Gtk2::TreeView> which is shows talk log.
