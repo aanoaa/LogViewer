@@ -5,18 +5,23 @@ use utf8;
 use strict;
 use warnings;
 use autodie;
+use Readonly;
 use DateTime;
 use App::LogViewer;
 use Glib qw(TRUE FALSE);
 use Gtk2 '-init';
 use Acme::Gtk2::Ex::Builder;
 
+Readonly::Scalar my $LABEL_PREFIX => q{<span size="large">IRC log</span>};
+Readonly::Scalar my $LABEL_FORMAT => sprintf(
+    q{%s<span size="large">: <b><i>%%s</i></b></span>},
+    $LABEL_PREFIX
+);
+
 my $lv = App::LogViewer->new(
     channel => 'perl-kr',
     date    => DateTime->now(time_zone => 'Asia/Seoul'),
 );
-$lv->channel('perl-kr');
-$lv->date(DateTime->now(time_zone => 'Asia/Seoul'));
 
 my $app = build {
     widget Window => contain {
@@ -30,11 +35,7 @@ my $app = build {
             info id => 'vbox';
             widget Label => contain {
                 info id        => 'main-label';
-                set  markup    =>
-                      '<span size="large">'
-                    . 'IRC log'
-                    . '</span>'
-                    ;
+                set  markup    => $LABEL_PREFIX;
                 set  alignment => 0, 0.5;
                 set  padding   => 10, 10;
             };
@@ -47,20 +48,30 @@ my $app = build {
                     set label   => 'next';
                     on  clicked => \&next_log, $lv;
                 };
+                widget Button => contain {
+                    set label   => 'today';
+                    on  clicked => \&today_log, $lv;
+                };
+                widget Button => contain {
+                    set label   => 'force refresh';
+                    on  clicked => \&forece_refresh_log, $lv;
+                };
             };
         };
     };
 };
+
+update_label($lv);
 
 $app->find('vbox')->pack_start($lv->get_talk_vbox, TRUE, TRUE, 1);
 $app->find('window')->show_all;
 
 Gtk2->main;
 
-sub change_label {
+sub update_label {
     my $lv = shift;
 
-    $app->find('main-label')->set_label($lv->date);
+    $app->find('main-label')->set_label( sprintf($LABEL_FORMAT, $lv->date->ymd) );
 }
 
 sub prev_log {
@@ -68,7 +79,7 @@ sub prev_log {
     my $lv   = shift;
 
     $lv->date( $lv->date->subtract(days => 1) );
-    change_label($lv);
+    update_label($lv);
 }
 
 sub next_log {
@@ -76,5 +87,21 @@ sub next_log {
     my $lv   = shift;
 
     $lv->date( $lv->date->add(days => 1) );
-    change_label($lv);
+    update_label($lv);
+}
+
+sub today_log {
+    my $self = shift;
+    my $lv   = shift;
+
+    $lv->date(DateTime->now(time_zone => 'Asia/Seoul'));
+    update_label($lv);
+}
+
+sub force_refresh_log {
+    my $self = shift;
+    my $lv   = shift;
+
+    $lv->force_reload(1);
+    $lv->force_reload(0);
 }
