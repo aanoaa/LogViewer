@@ -52,13 +52,35 @@ __END__
 
 =head1 SYNOPSIS
 
-    use App::LogViewer;
+    use App::LogViewer::Cache;
     
-    my $lv = App::LogViewer::Config->new;
-    my $cache = $lv->cache;
+    my $cache = App::LogViewer::Cache->new(
+        cache_dir => '/home/keedi/.logviewer/cache',
+    );
+    
+    my $value = $cache->load($key);
+    if (!defined $value) {
+        $value = ...
+        $cache->save($key, $value);
+    }
 
 
 =head1 DESCRIPTION
 
 This module is used for C<App::LogViewer>.
 See C<App::LogViewer> and C<LogViewer::Web>.
+
+
+=attr cache_dir
+
+Cache directory.
+
+
+=method load
+
+Get data from the cache
+
+
+=method save
+
+Set data to the cache
