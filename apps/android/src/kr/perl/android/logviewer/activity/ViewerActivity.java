@@ -10,11 +10,13 @@ import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogAdapter;
 import kr.perl.android.logviewer.preference.LogPreference;
+import kr.perl.android.logviewer.provider.SearchHistoryProvider;
 import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
 import kr.perl.provider.LogViewer.Logs;
 import android.app.ListActivity;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
@@ -23,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.SearchRecentSuggestions;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +35,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class ViewerActivity extends ListActivity {
 	
@@ -48,45 +52,13 @@ public class ViewerActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Intent intent = getIntent();
-		String action = intent.getAction();
-		if (Intent.ACTION_VIEW.equals(action)) {
-			mStrDate = intent.getStringExtra(Constants.KEY_YMD);
-			mChannel = intent.getStringExtra(Constants.KEY_CHANNEL);
-			if (mStrDate == null || !isValidDate(mStrDate) || mChannel == null) {
-				Log.e(TAG, "Invalid argument");
-				finish();
-				return;
-			}
-		} else if (Intent.ACTION_MAIN.equals(action)) {
-			mStrDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			mChannel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
-		} else {
-			Log.e(TAG, "Unknown action");
-			finish();
-			return;
-		}
-		
-		if (intent.getData() == null) {
-			intent.setData(Logs.CONTENT_URI);
-		}
-		
-		mCursor = managedQuery(getIntent().getData(), PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
+		handleIntent(getIntent());
 		init();
 		addHooks();
-		
-		SimpleCursorAdapter adapter = new LogAdapter(
-			this,
-			R.layout.log_row, 
-			mCursor, 
-			new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
-			new int[] { R.id.text1, R.id.text2, R.id.text3 }
-		);
-		
-		setListAdapter(adapter);
+		setContent();
+		refresh();
 	}
 	
 	@Override
@@ -97,19 +69,56 @@ public class ViewerActivity extends ListActivity {
 		if (!channel.equals(mChannel)) {
 			mChannel = channel;
 			setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
-			mCursor = managedQuery(getIntent().getData(), PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
-			SimpleCursorAdapter adapter = new LogAdapter(
-					this, 
-					R.layout.log_row, 
-					mCursor, 
-					new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
-					new int[] { R.id.text1, R.id.text2, R.id.text3 }
-			);
-			
-			setListAdapter(adapter);
+			setContent();
+		}
+	}
+	
+	@Override
+	public boolean onSearchRequested() {
+	    // pause some stuff here
+		return super.onSearchRequested();
+	}
+	
+	@Override
+    public void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent(intent);
+    }
+	
+	private void handleIntent(Intent intent) {
+		String action = intent.getAction();
+		if (Intent.ACTION_VIEW.equals(action)) {
+			mStrDate = intent.getStringExtra(Constants.KEY_YMD);
+			mChannel = intent.getStringExtra(Constants.KEY_CHANNEL);
+			if (mStrDate == null || !isValidDate(mStrDate) || mChannel == null) {
+				Log.e(TAG, "Invalid argument");
+				finish();
+				return;
+			}
+		} else if (Intent.ACTION_MAIN.equals(action)) {
+		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+		    	  SearchHistoryProvider.AUTHORITY, SearchHistoryProvider.MODE);
+		    suggestions.saveRecentQuery(query, null);
+		    search(query);
+		} else {
+			Log.e(TAG, "Unknown action");
+			finish();
+			return;
 		}
 		
-		refresh();
+		if (getIntent().getData() == null) getIntent().setData(Logs.CONTENT_URI);
+		if (mStrDate == null) mStrDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+		if (mChannel == null) {
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		    mChannel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+		}
+	}
+	
+	private void search(String query) {
+		Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
+		// 검색해서 결과를 새로 보여줘야 한다.
 	}
 	
 	@Override
@@ -170,11 +179,23 @@ public class ViewerActivity extends ListActivity {
     
     	return false;
     }
+    
+    private void setContent() {
+    	setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
+    	mCursor = managedQuery(getIntent().getData(), PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
+		SimpleCursorAdapter adapter = new LogAdapter(
+				this,
+				R.layout.log_row, 
+				mCursor, 
+				new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
+				new int[] { R.id.text1, R.id.text2, R.id.text3 }
+		);
+			
+		setListAdapter(adapter);
+    }
 	
 	private void init() {
 		mList = (ListView) findViewById(android.R.id.list);
-		mLatestEpoch = 0;
-		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
 	}
 	
 	private void refresh() {

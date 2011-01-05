@@ -12,13 +12,17 @@
         <!-- Content Provider -->
         <provider 
             android:name=".provider.LogProvider"
-            android:authorities="kr.perl.provider.LogViewer" />
+            android:authorities="kr.perl.provider.LogViewer.Log" />
+        <provider 
+        	android:name=".provider.SearchHistoryProvider"
+            android:authorities="kr.perl.provider.LogViewer.SearchHistory" />
         <!-- end of Content Provider -->
 
         <!-- Activities -->
         <activity
             android:name=".activity.ViewerActivity"
             android:label="@string/activity_viewer"
+            android:launchMode="singleTop"
             clearTaskOnLaunch="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,6 +34,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="vnd.android.cursor.dir/vnd.kr.perl.android.logviewer.log" />
             </intent-filter>
+
+            <intent-filter>
+            	<action android:name="android.intent.action.SEARCH" />
+        	</intent-filter>
+
+        	<meta-data 
+        		android:name="android.app.searchable"
+				android:resource="@xml/searchable"/>
         </activity>
         
         <activity
@@ -54,6 +66,9 @@
 
         <!-- Sample Activities -->
         <!-- end of Sample Activities -->
+        <meta-data 
+        	android:name="android.app.default_searchable"
+			android:value=".activity.ViewerActivity" />
     </application>
 
     <!-- permissions -->

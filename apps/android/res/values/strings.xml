@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LogViewer</string>
+    <string name="app_label">LogViewer</string>
+    <string name="search_hint">log search</string>
     <string name="package_name">kr.perl.android.logviewer</string>
     
     <string name="activity_viewer">IRC Log Viewer</string>
