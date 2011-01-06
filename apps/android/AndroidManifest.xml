@@ -30,28 +30,12 @@
             </intent-filter>
             
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.dir/vnd.kr.perl.android.logviewer.log" />
-            </intent-filter>
-
-            <intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
         	</intent-filter>
 
         	<meta-data 
         		android:name="android.app.searchable"
 				android:resource="@xml/searchable"/>
-        </activity>
-        
-        <activity
-            android:name=".activity.LogListActivity"
-            android:label="@string/activity_list">
-            <intent-filter>
-                <action android:name="android.intent.action.ACTION_GET_CONTENT" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.dir/vnd.kr.perl.android.logviewer.log" />
-            </intent-filter>
         </activity>
         
         <activity

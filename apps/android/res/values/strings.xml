@@ -2,16 +2,18 @@
 <resources>
     <string name="app_name">LogViewer</string>
     <string name="app_label">LogViewer</string>
+    <string name="search">search</string>
     <string name="search_hint">log search</string>
     <string name="package_name">kr.perl.android.logviewer</string>
     
     <string name="activity_viewer">IRC Log Viewer</string>
-    <string name="activity_list">List</string>
     <string name="activity_prefrence">Preference</string>
     
     <string name="log_uptodate">up to date.</string>
+    <string name="pick">date pick</string>
+    <string name="today">today</string>
+    <string name="mention">mention</string>
     <string name="settings">settings</string>
-    <string name="list">list</string>
     
     <string name="btn_top">top</string>
     <string name="btn_bottom">bottom</string>
@@ -31,12 +33,13 @@
     <string name="error_no_log">로그가 없습니다.</string>
     <string name="error_http_io">%1$d: %2$s</string>
     <string name="error_connection">Cannot connect server</string>
+    <string name="error_internal">internal error</string>
     <!-- end of error message -->
 
     <!-- preference -->
     <string name="category_network">Network</string>
     <string name="pref_channel">Channel</string>
-    <string name="pref_channel_hint">perl-kr</string>
     <string name="pref_channel_default">perl-kr</string>
+    <string name="pref_nickname">Nickname</string>
     <!-- end of preference -->
 </resources>

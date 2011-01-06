@@ -1,10 +1,9 @@
 package kr.perl.android.logviewer.activity;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
@@ -15,6 +14,8 @@ import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
 import kr.perl.provider.LogViewer.Logs;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Intent;
@@ -32,9 +33,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class ViewerActivity extends ListActivity {
@@ -42,10 +43,10 @@ public class ViewerActivity extends ListActivity {
 	private static final String TAG = "ViewerActivity";
 	private static final String[] PROJECTION = new String[] { Logs._ID, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
 	private static final String SELECTION = "date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + Logs.CHANNEL + " = ?";
+	private static final int DATE_DIALOG_ID = 0;
 	
 	private String mChannel;
 	private String mStrDate;
-	private int mLatestEpoch;
 	private Cursor mCursor;
 	private ListView mList;
 	
@@ -54,48 +55,21 @@ public class ViewerActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
-		handleIntent(getIntent());
 		init();
 		addHooks();
-		setContent();
-		refresh();
+		handleIntent(getIntent());
 	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		String channel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
-		if (!channel.equals(mChannel)) {
-			mChannel = channel;
-			setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
-			setContent();
-		}
-	}
-	
-	@Override
-	public boolean onSearchRequested() {
-	    // pause some stuff here
-		return super.onSearchRequested();
-	}
-	
-	@Override
-    public void onNewIntent(Intent intent) {
-        setIntent(intent);
-        handleIntent(intent);
-    }
 	
 	private void handleIntent(Intent intent) {
 		String action = intent.getAction();
-		if (Intent.ACTION_VIEW.equals(action)) {
-			mStrDate = intent.getStringExtra(Constants.KEY_YMD);
-			mChannel = intent.getStringExtra(Constants.KEY_CHANNEL);
-			if (mStrDate == null || !isValidDate(mStrDate) || mChannel == null) {
-				Log.e(TAG, "Invalid argument");
-				finish();
-				return;
-			}
-		} else if (Intent.ACTION_MAIN.equals(action)) {
+		if (Intent.ACTION_MAIN.equals(action)) {
+			mStrDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			mChannel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+			mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
+	    	startManagingCursor(mCursor);
+	    	setListAdapter(getAdapter());
+			refresh();
 		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
 			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
@@ -107,23 +81,16 @@ public class ViewerActivity extends ListActivity {
 			finish();
 			return;
 		}
-		
-		if (getIntent().getData() == null) getIntent().setData(Logs.CONTENT_URI);
-		if (mStrDate == null) mStrDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-		if (mChannel == null) {
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		    mChannel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
-		}
-	}
-	
-	private void search(String query) {
-		Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
-		// 검색해서 결과를 새로 보여줘야 한다.
 	}
 	
 	@Override
-	public void onPause() {
-		super.onPause();
+    public void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent(intent);
+    }
+	
+	private void search(String query) {
+		Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override
@@ -139,96 +106,103 @@ public class ViewerActivity extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
+		switch (item.getItemId()) {
+		case R.id.mention:
+			ContextUtil.toast(this, "not yet implemented");
+			
+			break;
+		case R.id.today:
+			String strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+			changeDate(strDate);
+			refresh();
+			
+			break;
+		case R.id.search:
+			onSearchRequested();
+			break;
+			
 	    case R.id.settings:
 	    	startActivity(new Intent(getApplicationContext(), LogPreference.class));
-	        return true;
-	    case R.id.list:
-	    	// FIXME: 이제 슬슬 구현해볼까
-	    	Intent intent = new Intent();
-	    	intent.setAction(Intent.ACTION_GET_CONTENT);
-	    	intent.setDataAndType(Logs.CONTENT_URI, Logs.CONTENT_TYPE);
-	    	intent.addCategory(Intent.CATEGORY_DEFAULT);
-	    	try {
-	    		startActivity(intent);
-	    	} catch(Exception e) {
-	    		ContextUtil.toast(this, "Cannot found activity");
-	    	}
-	        return true;
+	    	break;
+	    	
+	    case R.id.pick:
+	    	showDialog(DATE_DIALOG_ID);
+	    	break;
+	    	
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	    
+	    return true;
 	}
 	
-	private void sync(final Uri uri, final String channel) {
-		Thread thread = new SyncThread(this, uri, channel);
-		thread.start();
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DATE_DIALOG_ID:
+			int year = Integer.parseInt(mStrDate.substring(0, 4));
+			int month = Integer.parseInt(mStrDate.substring(5, 7));
+			int day = Integer.parseInt(mStrDate.substring(8, 10));
+			return new DatePickerDialog(this,
+					mDateSetListener,
+					year, month - 1, day);
+		}
+		return null;
 	}
 	
-	/*
-     * FIXME:
-     *      MMdd 에 대해 더 엄격한 유효성 검사가 필요함
-     *      MM은 12 이상일 수 없고, dd 도 음수나 32 이상이 될 수 없기에..
-     */
-    private boolean isValidDate(String strDate) {
-    	Pattern pattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
-    	Matcher m = pattern.matcher(strDate);
-    	if (m.find()) {
-    		return true;
-    	}
-    
-    	return false;
-    }
-    
-    private void setContent() {
-    	setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
-    	mCursor = managedQuery(getIntent().getData(), PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
-		SimpleCursorAdapter adapter = new LogAdapter(
-				this,
-				R.layout.log_row, 
-				mCursor, 
-				new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
-				new int[] { R.id.text1, R.id.text2, R.id.text3 }
-		);
+	private DatePickerDialog.OnDateSetListener mDateSetListener =
+		new DatePickerDialog.OnDateSetListener() {
+
+		public void onDateSet(DatePicker view, int year, 
+				int monthOfYear, int dayOfMonth) {
 			
-		setListAdapter(adapter);
-    }
+			String strDate = new StringBuilder().append(year)
+				.append("-")
+				.append(String.format("%02d", monthOfYear + 1))
+				.append("-")
+				.append(String.format("%02d", dayOfMonth)).toString();
+			
+			changeDate(strDate);
+			refresh();
+		}
+	};
+	
+	public String prevDay (String strDate) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = format.parse(strDate);
+		date.setTime(date.getTime() - ((long) 1000 * 60 * 60 * 24));
+		return format.format(date);
+	}
+	
+	public String nextDay (String strDate) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = format.parse(strDate);
+		date.setTime(date.getTime() + ((long) 1000 * 60 * 60 * 24));
+		return format.format(date);
+	}
 	
 	private void init() {
 		mList = (ListView) findViewById(android.R.id.list);
 	}
-	
-	private void refresh() {
-		mList.setSelection(mCursor.getCount()); // refresh 누르면 바닥으로..
-		if (SyncThread.isQuery()) return;
-		if (mCursor.getCount() != 0) {
-			mCursor.moveToLast();
-			int index = mCursor.getColumnIndex(Logs.CREATED_ON);
-			if (!mCursor.isNull(index)) mLatestEpoch = mCursor.getInt(index);
-		}
+    
+    private void addHooks() {
+		ImageButton button;
+		// prev, top, bottom, next, today, refresh
+		button = (ImageButton) findViewById(R.id.button1);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					changeDate(prevDay(mStrDate));
+					refresh();
+				} catch (ParseException e) {
+					e.printStackTrace();
+					ContextUtil.toast(ViewerActivity.this, getString(R.string.error_internal));
+				}
+			}
+		});
 		
-		sync(buildUri(mChannel, mStrDate, mLatestEpoch), mChannel);
-	}
-	
-	private Uri buildUri(String channel, String strDate, int epoch) {
-		// FIXME: UriMatcher 추가하고 URI 로 해결하자
-		String ymd[] = strDate.split("-");
-		ArrayList<String> pieces = new ArrayList<String>(ymd.length);
-		for (String item : ymd) {
-			pieces.add(item);
-		}
-		
-		String path = channel + "/" + StringUtil.join(pieces, "/");
-		if (epoch != 0) {
-			path += "/" + epoch;
-		}
-		
-		return Uri.parse(Constants.LOG_SERVER_DOMAIN + path);
-	}
-	
-	private void addHooks() {
-		Button button;
-		button = (Button) findViewById(R.id.button1);
+		button = (ImageButton) findViewById(R.id.button2);
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -236,7 +210,39 @@ public class ViewerActivity extends ListActivity {
 			}
 		});
 		
-		button = (Button) findViewById(R.id.button2);
+		button = (ImageButton) findViewById(R.id.button3);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mList.setSelection(mCursor.getCount());
+			}
+		});
+		
+		button = (ImageButton) findViewById(R.id.button4);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					changeDate(nextDay(mStrDate));
+					refresh();
+				} catch (ParseException e) {
+					e.printStackTrace();
+					ContextUtil.toast(ViewerActivity.this, getString(R.string.error_internal));
+				}
+			}
+		});
+		
+		button = (ImageButton) findViewById(R.id.button5);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+				changeDate(strDate);
+				refresh();
+			}
+		});
+		
+		button = (ImageButton) findViewById(R.id.button6);
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -251,5 +257,62 @@ public class ViewerActivity extends ListActivity {
 				mList.setSelection(mCursor.getCount());
 			}
 		});
+	}
+    
+    private void changeDate(String strDate) {
+		if (mStrDate.equals(strDate)) {
+			return;
+		}
+		
+		mStrDate = strDate;
+		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
+		mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
+		setListAdapter(getAdapter());
+	}
+    
+    private LogAdapter getAdapter() {
+		return new LogAdapter(
+				this, 
+				R.layout.log_row, 
+				mCursor, 
+				new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
+				new int[] { R.id.text1, R.id.text2, R.id.text3 }
+		);
+	}
+	
+	private void refresh() {
+		if (SyncThread.isQuery()) {
+			mList.setSelection(mCursor.getCount());
+			return;
+		}
+		
+		int latestEpoch = 0;
+		if (mCursor.getCount() != 0) {
+			mCursor.moveToLast();
+			int index = mCursor.getColumnIndex(Logs.CREATED_ON);
+			if (!mCursor.isNull(index)) latestEpoch = mCursor.getInt(index);
+		}
+		
+		sync(buildUri(mChannel, mStrDate, latestEpoch), mChannel);
+	}
+	
+	private void sync(final Uri uri, final String channel) {
+		Thread thread = new SyncThread(this, uri, channel);
+		thread.start();
+	}
+	
+	private Uri buildUri(String channel, String strDate, int epoch) {
+		String ymd[] = strDate.split("-");
+		ArrayList<String> pieces = new ArrayList<String>(ymd.length);
+		for (String item : ymd) {
+			pieces.add(item);
+		}
+		
+		String path = channel + "/" + StringUtil.join(pieces, "/");
+		if (epoch != 0) {
+			path += "/" + epoch;
+		}
+		
+		return Uri.parse(Constants.LOG_SERVER_DOMAIN + path);
 	}
 }

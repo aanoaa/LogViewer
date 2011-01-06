@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import android.app.ListActivity;
 import android.content.ContentValues;
 import android.net.Uri;
-import android.widget.ArrayAdapter;
 import android.widget.SimpleCursorAdapter;
 
 public class SyncThread extends Thread {
@@ -43,7 +42,7 @@ public class SyncThread extends Thread {
 		public void run() {
 			mActivity.setProgressBarIndeterminate(false);
 			if (mActivity.getListAdapter().getCount() == 0) {
-				mActivity.setListAdapter(new ArrayAdapter<String>(mActivity.getApplicationContext(), android.R.layout.simple_list_item_1, new String [] { mActivity.getString(R.string.error_no_log) }));
+				ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.error_no_log));
 			}
 		}
 	};
@@ -205,7 +204,7 @@ public class SyncThread extends Thread {
 				}
 			});
 		} else {
-			ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.log_uptodate));
+			if (mActivity.getListAdapter().getCount() != 0)	ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.log_uptodate));
 			runUiThread(threadEmptyContentRunnable);
 		}
 	}

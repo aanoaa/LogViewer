@@ -2,11 +2,23 @@
 <menu 
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	<item 
+		android:id="@+id/search"
+		android:icon="@drawable/ic_menu_search"
+		android:title="@string/search" />
+	<item 
+		android:id="@+id/mention"
+		android:icon="@drawable/ic_menu_mention"
+		android:title="@string/mention" />
+	<item 
+		android:id="@+id/today"
+		android:icon="@drawable/ic_menu_today"
+		android:title="@string/today" />
+	<item 
+		android:id="@+id/pick"
+		android:icon="@drawable/ic_menu_agenda"
+		android:title="@string/pick" />
+	<item 
 		android:id="@+id/settings"
 		android:icon="@drawable/ic_menu_preferences"
 		android:title="@string/settings" />
-	<item 
-		android:id="@+id/list"
-		android:icon="@drawable/ic_menu_list"
-		android:title="@string/list" />
 </menu>
