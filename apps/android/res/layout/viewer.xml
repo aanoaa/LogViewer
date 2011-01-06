@@ -8,43 +8,52 @@
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:orientation="horizontal"
-    	android:gravity="center_vertical|right">
+    	android:gravity="center_vertical|right"
+    	android:background="#1a2436"
+    	android:paddingTop="1dip"
+    	android:paddingBottom="1dip">
     	
     	<ImageButton
     		android:id="@+id/button1"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
     		android:src="@drawable/ic_prev"
+    		android:layout_marginLeft="1dip"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button2"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
     		android:src="@drawable/ic_top"
+    		android:layout_marginLeft="1dip"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button3"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
     		android:src="@drawable/ic_bottom"
+    		android:layout_marginLeft="1dip"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button4"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
     		android:src="@drawable/ic_next"
+    		android:layout_marginLeft="1dip"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button5"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
     		android:src="@drawable/ic_today"
+    		android:layout_marginLeft="1dip"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button6"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
     		android:src="@drawable/ic_refresh"
+    		android:layout_marginLeft="1dip"
     		android:background="@drawable/button_background" />
     </LinearLayout>
     <ListView
