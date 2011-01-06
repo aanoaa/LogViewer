@@ -8,49 +8,42 @@
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:orientation="horizontal"
-    	android:padding="5dip"
     	android:gravity="center_vertical|right">
     	
     	<ImageButton
     		android:id="@+id/button1"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
-    		android:layout_margin="5dip"
     		android:src="@drawable/ic_prev"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button2"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
-    		android:layout_margin="5dip"
     		android:src="@drawable/ic_top"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button3"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
-    		android:layout_margin="5dip"
     		android:src="@drawable/ic_bottom"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button4"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
-    		android:layout_margin="5dip"
     		android:src="@drawable/ic_next"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button5"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
-    		android:layout_margin="5dip"
     		android:src="@drawable/ic_today"
     		android:background="@drawable/button_background" />
     	<ImageButton
     		android:id="@+id/button6"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
-    		android:layout_margin="5dip"
     		android:src="@drawable/ic_refresh"
     		android:background="@drawable/button_background" />
     </LinearLayout>
