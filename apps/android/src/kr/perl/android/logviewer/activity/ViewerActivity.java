@@ -84,6 +84,12 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	@Override
+	public void onResume() {
+		super.onResume();
+		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
+	}
+	
+	@Override
     public void onNewIntent(Intent intent) {
         setIntent(intent);
         handleIntent(intent);
