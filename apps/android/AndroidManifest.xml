@@ -48,6 +48,10 @@
         </activity>
         <!-- end of Activities -->
 
+		<activity
+			android:name=".activity.GestureActivity"
+			android:label="@string/activity_gesture" android:theme="@style/gestureview">
+		</activity>
         <!-- Sample Activities -->
         <!-- end of Sample Activities -->
         <meta-data 
@@ -68,5 +72,7 @@
         android:anyDensity="true" />
     <uses-sdk android:minSdkVersion="4" />
     <!-- end of etc -->
+
+
 
 </manifest> 

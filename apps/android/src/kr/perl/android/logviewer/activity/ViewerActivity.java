@@ -44,6 +44,7 @@ public class ViewerActivity extends ListActivity {
 	private static final String[] PROJECTION = new String[] { Logs._ID, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
 	private static final String SELECTION = "date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + Logs.CHANNEL + " = ?";
 	private static final int DATE_DIALOG_ID = 0;
+	private static final int GESTURE_REQUEST = 0;
 	
 	private String mChannel;
 	private String mStrDate;
@@ -155,6 +156,34 @@ public class ViewerActivity extends ListActivity {
 		}
 		return null;
 	}
+     
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		Log.d(TAG, "onActivityResult");
+		if (resultCode != RESULT_OK) return;
+		Log.d(TAG, "result ok");
+		switch (requestCode) {
+		case GESTURE_REQUEST:
+			Bundle bundle = data.getExtras();
+			String gestureName = bundle.getString("gesture");
+			Log.d(TAG, gestureName);
+			if (gestureName.equals("go_top")) {
+				ContextUtil.toastOnUiTread(this, "top");
+				mList.setSelection(0);
+			}
+			else if (gestureName.equals("go_bottom")) {
+				refresh();
+			}
+			break;
+		}
+	}
+	
+	private void sync(final Uri uri, final String channel) {
+		Thread thread = new SyncThread(this, uri, channel);
+		thread.start();
+	}
 	
 	private DatePickerDialog.OnDateSetListener mDateSetListener =
 		new DatePickerDialog.OnDateSetListener() {
@@ -253,6 +282,15 @@ public class ViewerActivity extends ListActivity {
 			@Override
 			public void onClick(View v) {
 				refresh();
+			}
+		});
+		
+		button = (Button) findViewById(R.id.gesture_button);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(ViewerActivity.this, GestureActivity.class);
+				startActivityForResult(intent, GESTURE_REQUEST);
 			}
 		});
 		
