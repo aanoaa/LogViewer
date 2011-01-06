@@ -159,7 +159,6 @@ public class ViewerActivity extends ListActivity {
      
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		Log.d(TAG, "onActivityResult");
 		if (resultCode != RESULT_OK) return;
@@ -285,7 +284,7 @@ public class ViewerActivity extends ListActivity {
 			}
 		});
 		
-		button = (Button) findViewById(R.id.gesture_button);
+		button = (ImageButton) findViewById(R.id.gesture_button);
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -338,11 +337,6 @@ public class ViewerActivity extends ListActivity {
 		}
 		
 		sync(buildUri(mChannel, mStrDate, latestEpoch), mChannel);
-	}
-	
-	private void sync(final Uri uri, final String channel) {
-		Thread thread = new SyncThread(this, uri, channel);
-		thread.start();
 	}
 	
 	private Uri buildUri(String channel, String strDate, int epoch) {
