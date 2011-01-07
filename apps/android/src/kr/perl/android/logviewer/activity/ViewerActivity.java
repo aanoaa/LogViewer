@@ -173,6 +173,7 @@ public class ViewerActivity extends ListActivity {
 				mList.setSelection(0);
 			}
 			else if (gestureName.equals("go_bottom")) {
+				ContextUtil.toast(this, "bottom");
 				mList.setSelection(mCursor.getCount());
 			}
 			break;
