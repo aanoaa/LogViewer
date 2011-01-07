@@ -169,11 +169,11 @@ public class ViewerActivity extends ListActivity {
 			String gestureName = bundle.getString("gesture");
 			Log.d(TAG, gestureName);
 			if (gestureName.equals("go_top")) {
-				ContextUtil.toastOnUiTread(this, "top");
+				ContextUtil.toast(this, "top"); // activity can run on UI thread only right?
 				mList.setSelection(0);
 			}
 			else if (gestureName.equals("go_bottom")) {
-				refresh();
+				mList.setSelection(mCursor.getCount());
 			}
 			break;
 		}
