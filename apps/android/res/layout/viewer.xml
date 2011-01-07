@@ -64,6 +64,12 @@
 	    		android:src="@drawable/ic_prev"
 	    		android:layout_marginLeft="1dip"
 	    		android:background="@drawable/button_background" />
+			<ImageButton
+	    		android:id="@+id/button_title"
+	    		android:layout_toLeftOf="@id/button1"
+	    		android:layout_width="fill_parent"
+	    		android:layout_height="50dip"
+	    		android:background="@drawable/button_background" />
 	    </RelativeLayout>
 	    <ListView
 	    	android:id="@id/android:list"
