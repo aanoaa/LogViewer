@@ -44,6 +44,7 @@ public class ViewerActivity extends ListActivity {
 	private static final String[] PROJECTION = new String[] { Logs._ID, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
 	private static final String SELECTION = "date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + Logs.CHANNEL + " = ?";
 	private static final int DATE_DIALOG_ID = 0;
+	private static final int GESTURE_REQUEST = 0;
 	
 	private String mChannel;
 	private String mStrDate;
@@ -155,6 +156,33 @@ public class ViewerActivity extends ListActivity {
 		}
 		return null;
 	}
+     
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		Log.d(TAG, "onActivityResult");
+		if (resultCode != RESULT_OK) return;
+		Log.d(TAG, "result ok");
+		switch (requestCode) {
+		case GESTURE_REQUEST:
+			Bundle bundle = data.getExtras();
+			String gestureName = bundle.getString("gesture");
+			Log.d(TAG, gestureName);
+			if (gestureName.equals("go_top")) {
+				ContextUtil.toast(this, "top"); // activity can run on UI thread only right?
+				mList.setSelection(0);
+			}
+			else if (gestureName.equals("go_bottom")) {
+				mList.setSelection(mCursor.getCount());
+			}
+			break;
+		}
+	}
+	
+	private void sync(final Uri uri, final String channel) {
+		Thread thread = new SyncThread(this, uri, channel);
+		thread.start();
+	}
 	
 	private DatePickerDialog.OnDateSetListener mDateSetListener =
 		new DatePickerDialog.OnDateSetListener() {
@@ -256,6 +284,15 @@ public class ViewerActivity extends ListActivity {
 			}
 		});
 		
+		button = (ImageButton) findViewById(R.id.gesture_button);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(ViewerActivity.this, GestureActivity.class);
+				startActivityForResult(intent, GESTURE_REQUEST);
+			}
+		});
+		
 		getContentResolver().registerContentObserver(Logs.CONTENT_URI, true, new ContentObserver(new Handler()) {
 			@Override
 			public void onChange(boolean selfChange) {
@@ -300,11 +337,6 @@ public class ViewerActivity extends ListActivity {
 		}
 		
 		sync(buildUri(mChannel, mStrDate, latestEpoch), mChannel);
-	}
-	
-	private void sync(final Uri uri, final String channel) {
-		Thread thread = new SyncThread(this, uri, channel);
-		thread.start();
 	}
 	
 	private Uri buildUri(String channel, String strDate, int epoch) {

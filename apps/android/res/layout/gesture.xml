@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<android.gesture.GestureOverlayView
+		android:id="@+id/gesture_view"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:gestureColor="#ff0"
+		android:gestureStrokeType="single"
+		android:eventsInterceptionEnabled="false"
+		android:orientation="vertical" />
+	<Button
+		android:id="@+id/gesture_cancel_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|left"
+		android:background="@drawable/finger_cancel" />
+</FrameLayout>

@@ -49,4 +49,12 @@
         <item name="android:src">@drawable/ic_btn_round_more</item>
         <item name="android:background">@drawable/btn_circle</item>
     </style>
+<style name="gestureview">
+	<item name="android:windowFullscreen">true</item>
+	<item name="android:windowIsFloating">true</item>
+	<item name="android:windowBackground">@android:color/transparent</item>
+	<item name="android:background">@android:color/transparent</item>
+	<item name="android:windowNoTitle">true</item>
+	<item name="android:colorForeground">#000</item>
+</style>
 </resources>
