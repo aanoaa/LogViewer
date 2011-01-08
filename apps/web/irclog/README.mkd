@@ -2,9 +2,24 @@ Devel Environment
 -----------------
 $HOME/.ssh/config : 서버쪽 MySQL에 접속하기 위해서 Tunnel 설정
 	Host vps1
-		Hostname vps1.smile.yuni.in
+		Hostname devel.irclog.hostname.com
 		LocalForward 3306 localhost:3306
 
 MySQL : TCP로 연결해야 하기 때문에 localhost가 아닌 127.0.0.1로 접속해야함.
-	mysql -u jeenbot -p irclog -h 127.0.0.1
+	ex) $ mysql -u DB_USER -p DB_NAME -h 127.0.0.1
+
+apps/web/irclog/config.yml
+	plugins:
+	  Database:
+		driver: "mysql"
+		database: "irclog"
+		host: "127.0.0.1"
+		username: "jeenbot"
+		password: "jeenbot"
+		connection_check_threshold: 10
+		dbi_params:
+		  AutoCommit: 1
+		  mysql_enable_utf8: 1
+		on_connect_do: ["SET NAMES 'utf8'", "SET CHARACTER SET 'utf8'" ]
+
 
