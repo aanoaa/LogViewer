@@ -12,10 +12,10 @@ apps/web/irclog/config.yml
 	plugins:
 	  Database:
 		driver: "mysql"
-		database: "irclog"
+		database: "DB_NAME"
 		host: "127.0.0.1"
-		username: "jeenbot"
-		password: "jeenbot"
+		username: "DB_USER"
+		password: "DB_PASS"
 		connection_check_threshold: 10
 		dbi_params:
 		  AutoCommit: 1
