@@ -24,15 +24,20 @@
             android:label="@string/activity_viewer"
             android:launchMode="singleTop"
             clearTaskOnLaunch="true">
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
+        </activity>
+        
+        <activity
+            android:name=".activity.SearchResultActivity"
+            android:label="@string/activity_search_result"
+            android:launchMode="singleTop">
             <intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
         	</intent-filter>
-
         	<meta-data 
         		android:name="android.app.searchable"
 				android:resource="@xml/searchable"/>
@@ -56,7 +61,7 @@
         <!-- end of Sample Activities -->
         <meta-data 
         	android:name="android.app.default_searchable"
-			android:value=".activity.ViewerActivity" />
+			android:value=".activity.SearchResultActivity" />
     </application>
 
     <!-- permissions -->
@@ -72,7 +77,4 @@
         android:anyDensity="true" />
     <uses-sdk android:minSdkVersion="4" />
     <!-- end of etc -->
-
-
-
 </manifest> 

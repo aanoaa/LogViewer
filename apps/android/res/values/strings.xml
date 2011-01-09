@@ -9,6 +9,7 @@
     <string name="activity_viewer">IRC Log Viewer</string>
     <string name="activity_prefrence">Preference</string>
     <string name="activity_gesture">Gesture</string>
+    <string name="activity_search_result">Search Result</string>
     
     <string name="log_uptodate">up to date.</string>
     <string name="pick">date pick</string>
@@ -27,6 +28,9 @@
     <string name="title_format1">%1$s - #perl-kr at freenode - IRC Log Viewer</string>
     <string name="title_format2">%1$s - %2$s IRC Log Viewer</string>
     <string name="title_format3">%1$s - IRC Log Viewer</string>
+    <string name="title_format_search">%1$s - Search Result</string>
+    
+    <string name="no_search_result">no logs for %1$s</string>
     <string name="notify_add_row">added %1$d row.</string>
     <!-- end of format -->
     

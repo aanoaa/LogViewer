@@ -48,8 +48,7 @@ public class LogAdapter extends SimpleCursorAdapter {
 		if (convertView == null) {
 	        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	        row = inflater.inflate(mResourceId, null);
-		}
-		else {
+		} else {
 			row = convertView;
 		}
 		
