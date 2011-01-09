@@ -4,12 +4,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogAdapter;
 import kr.perl.android.logviewer.preference.LogPreference;
-import kr.perl.android.logviewer.provider.SearchHistoryProvider;
 import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
@@ -17,7 +18,6 @@ import kr.perl.provider.LogViewer.Logs;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
@@ -26,7 +26,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.SearchRecentSuggestions;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,7 +35,6 @@ import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class ViewerActivity extends ListActivity {
 	
@@ -50,6 +48,12 @@ public class ViewerActivity extends ListActivity {
 	private String mStrDate;
 	private Cursor mCursor;
 	private ListView mList;
+	
+	public Map<String,?> createItem(String[] keys, String[] values) {
+		Map<String,String> item = new HashMap<String,String>();
+		for (int i=0; i<keys.length; i++) item.put(keys[i], values[i]);
+		return item;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,12 +75,6 @@ public class ViewerActivity extends ListActivity {
 	    	startManagingCursor(mCursor);
 	    	setListAdapter(getAdapter());
 			refresh();
-		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			String query = intent.getStringExtra(SearchManager.QUERY);
-			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
-		    	  SearchHistoryProvider.AUTHORITY, SearchHistoryProvider.MODE);
-		    suggestions.saveRecentQuery(query, null);
-		    search(query);
 		} else {
 			Log.e(TAG, "Unknown action");
 			finish();
@@ -95,10 +93,6 @@ public class ViewerActivity extends ListActivity {
         setIntent(intent);
         handleIntent(intent);
     }
-	
-	private void search(String query) {
-		Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
-	}
 	
 	@Override
     public void onListItemClick(ListView parent, View v, int position, long id) {
@@ -232,18 +226,28 @@ public class ViewerActivity extends ListActivity {
 		}
 	};
 	
-	public String prevDay (String strDate) throws ParseException {
+	public String prevDay (String strDate, int day) throws ParseException {
+		if (day <= 0) return strDate;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = format.parse(strDate);
-		date.setTime(date.getTime() - ((long) 1000 * 60 * 60 * 24));
+		date.setTime(date.getTime() - ((long) 1000 * 60 * 60 * 24 * day));
 		return format.format(date);
 	}
 	
-	public String nextDay (String strDate) throws ParseException {
+	public String prevDay(String strDate) throws ParseException {
+		return prevDay(strDate, 1);
+	}
+	
+	public String nextDay (String strDate, int day) throws ParseException {
+		if (day <= 0) return strDate;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = format.parse(strDate);
-		date.setTime(date.getTime() + ((long) 1000 * 60 * 60 * 24));
+		date.setTime(date.getTime() + ((long) 1000 * 60 * 60 * 24 * day));
 		return format.format(date);
+	}
+	
+	public String nextDay(String strDate) throws ParseException {
+		return nextDay(strDate, 1);
 	}
 	
 	private void init() {
