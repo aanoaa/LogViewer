@@ -18,8 +18,6 @@
 			android:centerColor="#364c73"
 			android:startColor="#203a66"
 			android:endColor="#445f91" />
-	    <padding android:left="8dp" android:top="10dp"
-	            android:right="8dp" android:bottom="10dp" />
 	</shape>
 </item>
 </layer-list>

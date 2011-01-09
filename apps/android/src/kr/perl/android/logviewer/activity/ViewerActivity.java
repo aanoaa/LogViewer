@@ -173,7 +173,38 @@ public class ViewerActivity extends ListActivity {
 				mList.setSelection(0);
 			}
 			else if (gestureName.equals("go_bottom")) {
+				ContextUtil.toast(this, "bottom");
 				mList.setSelection(mCursor.getCount());
+			}
+			else if (gestureName.equals("go_left")) {
+				ContextUtil.toast(this, "prev day");
+				try {
+					changeDate(prevDay(mStrDate));
+					refresh();
+				} catch (ParseException e) {
+					e.printStackTrace();
+					ContextUtil.toast(ViewerActivity.this, getString(R.string.error_internal));
+				}
+			}
+			else if (gestureName.equals("go_right")) {
+				ContextUtil.toast(this, "next day");
+				try {
+					changeDate(nextDay(mStrDate));
+					refresh();
+				} catch (ParseException e) {
+					e.printStackTrace();
+					ContextUtil.toast(ViewerActivity.this, getString(R.string.error_internal));
+				}
+			}
+			else if (gestureName.equals("triangle")) {
+				ContextUtil.toast(this, "today");
+				String strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+				changeDate(strDate);
+				refresh();
+			}
+			else if (gestureName.equals("circle")) {
+				ContextUtil.toast(this, "refresh");
+				refresh();
 			}
 			break;
 		}
