@@ -32,7 +32,7 @@ public class SearchResultActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.viewer);
+		setContentView(R.layout.search_result);
 		init();
 		addHooks();
 		handleIntent(getIntent());
