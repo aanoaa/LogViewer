@@ -17,6 +17,7 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
@@ -28,6 +29,9 @@ public class SearchResultActivity extends ListActivity {
 	private static final String TAG = "SearchResultActivity";
 	private static final String[] PROJECTION = new String[] { Logs._ID, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
 	private static final String SELECTION = Logs.CHANNEL + " = ? AND " + Logs.NICKNAME + "!= ? AND " + Logs.MESSAGE + " like ?";
+	
+	private static final String[] MENTION_PROJECTION = new String[] { Logs._ID, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
+	private static final String MENTION_SELECTION = Logs.CHANNEL + " = ? AND " + Logs.NICKNAME + "!= ? AND " + Logs.MESSAGE + " like ? AND date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ?";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +50,44 @@ public class SearchResultActivity extends ListActivity {
 		    	  SearchHistoryProvider.AUTHORITY, SearchHistoryProvider.MODE);
 		    suggestions.saveRecentQuery(query, null);
 		    setTitle(String.format(getString(R.string.title_format_search), query));
-		    search(query);
+		    
+		    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			String channel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+			String[] selectionArgs = new String[] { channel, "", "%" + query + "%" };
+			
+			Cursor cursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, selectionArgs, null);
+			startManagingCursor(cursor);
+			if (cursor.getCount() == 0) {
+				ContextUtil.toast(this, String.format(getString(R.string.no_search_result, query)));
+				finish();
+				return;
+			}
+			
+		    search(cursor);
+		} else if (Intent.ACTION_VIEW.equals(action)) {
+			Uri uri = intent.getData();
+			String date = intent.getStringExtra("date");
+			
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			String channel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+			String nickname = prefs.getString(getString(R.string.pref_nickname), "");
+			if (nickname.equals("")) {
+				ContextUtil.toast(this, getString(R.string.setting_nickname_first));
+				finish();
+				return;
+			}
+			
+			String[] selectionArgs = new String[] { channel, "", "%" + nickname + "%", date };
+			Cursor cursor = managedQuery(uri, MENTION_PROJECTION, MENTION_SELECTION, selectionArgs, null);
+			startManagingCursor(cursor);
+			if (cursor.getCount() == 0) {
+				ContextUtil.toast(this, String.format(getString(R.string.no_mention_result), nickname));
+				finish();
+				return;
+			}
+			
+			setTitle(String.format(getString(R.string.who_to_mention), nickname));
+		    search(cursor);
 		} else {
 			Log.e(TAG, "Unknown action");
 			finish();
@@ -66,18 +107,7 @@ public class SearchResultActivity extends ListActivity {
 		return item;
 	}
 	
-	private void search(String query) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String channel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
-		String[] selectionArgs = new String[] { channel, "", "%" + query + "%" };
-		Cursor cursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, selectionArgs, null);
-		
-		if (cursor.getCount() == 0) {
-			// toast & finish
-			ContextUtil.toast(this, String.format(getString(R.string.no_search_result, query)));
-			finish();
-		}
-		
+	private void search(Cursor cursor) {
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		List<Map<String,?>> category = null;
 		String prevDate = "";

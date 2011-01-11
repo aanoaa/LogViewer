@@ -14,6 +14,7 @@ import kr.perl.android.logviewer.preference.LogPreference;
 import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
+import kr.perl.provider.LogViewer;
 import kr.perl.provider.LogViewer.Logs;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -109,7 +110,7 @@ public class ViewerActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.mention:
-			ContextUtil.toast(this, "not yet implemented");
+			mention();
 			
 			break;
 		case R.id.today:
@@ -202,6 +203,12 @@ public class ViewerActivity extends ListActivity {
 			}
 			break;
 		}
+	}
+	
+	private void mention() {
+		Intent intent = new Intent(Intent.ACTION_VIEW, LogViewer.Logs.CONTENT_URI);
+		intent.putExtra("date", mStrDate);
+		startActivity(intent);
 	}
 	
 	private void sync(final Uri uri, final String channel) {
