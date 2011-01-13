@@ -6,7 +6,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
 
-public class ContextUtil {
+public final class ContextUtil {
+
+    private ContextUtil() { } // can not instantiate
 	
 	public static boolean isOnline(Activity activity) {
 		ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
