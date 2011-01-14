@@ -3,12 +3,10 @@ package kr.perl.android.logviewer.util;
 import kr.perl.android.logviewer.R;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,16 +27,6 @@ public final class ContextUtil {
 		
 		Toast toast = new Toast(activity.getApplicationContext());
 		toast.setDuration(Toast.LENGTH_SHORT);
-		toast.setView(view);
-		toast.show();
-	}
-	
-	public static void showToast(Context context, int resourceId, int id, Drawable drawable, Object... args) {
-		final View view = LayoutInflater.from(context).inflate(resourceId, null);
-		((ImageView) view.findViewById(id)).setImageDrawable(drawable);
-		
-		Toast toast = new Toast(context);
-		toast.setDuration(Toast.LENGTH_LONG);
 		toast.setView(view);
 		toast.show();
 	}
