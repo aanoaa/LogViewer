@@ -23,8 +23,35 @@
 
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-	
-	[self initData];
+}
+
+-(void)refreshData {
+	NSString *baseURL = URL_LOG_VIEW;
+	NSString *url;
+	if(channel != nil && year != nil && month != nil && date != nil && self.list != nil) {
+		NSString *lastTimestamp = [[self.list objectAtIndex:[self.list count]-1] objectAtIndex:1];
+		url = [NSString stringWithFormat:@"%@/%@/%@/%@/%@/%@", baseURL, channel, year, month, date, lastTimestamp];
+		
+		NSString *jsonString = [NSString stringWithContentsOfURL:[NSURL URLWithString:url]
+														encoding:NSUTF8StringEncoding
+														   error:nil];
+		NSLog(@"[refreshDate] request url = %@, json = %@", url, jsonString);
+		NSDictionary *data = [jsonString JSONValue];
+		
+		if(data != nil && [[data objectForKey:@"result"] isEqualToNumber:[NSNumber numberWithInt:200]]) {		
+			NSMutableArray *newList = [[NSMutableArray alloc] initWithArray:self.list];
+			[newList addObjectsFromArray:[data objectForKey:@"data"]];
+			
+			self.list = newList;
+			
+			[newList release];
+			
+			[self.tableView reloadData];
+			[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.list count]-1 inSection:0]
+								  atScrollPosition:UITableViewScrollPositionNone
+										  animated:YES];
+		}
+	}
 }
 
 -(void)initData {
@@ -61,13 +88,16 @@
 	
 	if(data != nil && [result isEqualToNumber:[NSNumber numberWithInt:200]]) {
 		self.list = [data objectForKey:@"data"];
+		[self.tableView reloadData];
+		[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.list count]-1 inSection:0]
+							  atScrollPosition:UITableViewScrollPositionNone
+									  animated:YES];
 	}
 	else {
 		[list release];
 		self.list = nil;
 	}
 	//NSLog(@"list = %@", self.list);
-	
 }
 
 -(NSString *)stringTime:(NSString *)timestamp {
@@ -104,11 +134,12 @@
 	label.text = theText;
 }
 
-/*
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+	[self initData];
 }
-*/
+
+
 /*
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -258,8 +289,9 @@
 	
 	// On Select Refresh
 	if(indexPath.row == [list count]) {
-		[self initData];
-		[tableView reloadData];
+		//[self initData];
+		//[tableView reloadData];
+		[self refreshData];
 		return;
 	}
 	// On Select Talk

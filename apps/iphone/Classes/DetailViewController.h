@@ -7,12 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "IFTweetLabel.h"
 
 @interface DetailViewController : UIViewController {
 	IBOutlet UILabel *nickLabel;
 	IBOutlet UILabel *datetimeLabel;
-	IBOutlet IFTweetLabel *talkLabel;
+	UIWebView *webView;
 	
 	NSString *nick;
 	NSString *datetime;
@@ -21,11 +20,12 @@
 
 @property (nonatomic, retain) UILabel *nickLabel;
 @property (nonatomic, retain) UILabel *datetimeLabel;
-@property (nonatomic, retain) IFTweetLabel *talkLabel;
+@property (nonatomic, retain) IBOutlet UIWebView *webView;
 
 @property (nonatomic, retain) NSString *nick;
 @property (nonatomic, retain) NSString *datetime;
 @property (nonatomic, retain) NSString *talk;
 
+- (NSString *)makeHTML;
 
 @end

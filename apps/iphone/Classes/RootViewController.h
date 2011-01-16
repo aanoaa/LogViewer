@@ -31,5 +31,6 @@
 -(void)setUILabelTextWithVerticalAlignTop:(NSString *)theText label:(UILabel*)label labelSize:(CGSize)labelSize;
 -(void)initData;
 - (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath;
+-(void)refreshData;
 
 @end

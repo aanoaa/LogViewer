@@ -8,9 +8,8 @@
 
 #import "DetailViewController.h"
 
-
 @implementation DetailViewController
-@synthesize nickLabel, datetimeLabel, talkLabel;
+@synthesize nickLabel, datetimeLabel, webView;
 @synthesize nick, datetime, talk;
 
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
@@ -30,17 +29,13 @@
 	
 	nickLabel.text = nick;
 	datetimeLabel.text = datetime;
-	
-	NSLog(@"talkLabel : %@", talkLabel);
-	
-	[talkLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
-	[talkLabel setTextColor:[UIColor whiteColor]];
-	[talkLabel setBackgroundColor:[UIColor clearColor]];
-	[talkLabel setNumberOfLines:0];
-	[talkLabel setText:talk];
-	[talkLabel setLinksEnabled:YES];
-	
-	NSLog(@"talkLabel : %@", talkLabel);
+	[self.webView loadHTMLString:[self makeHTML] baseURL:[NSURL URLWithString:@""]];
+}
+
+- (NSString *)makeHTML {
+	NSString *html = [[[NSString alloc]initWithFormat:@"<html><head></head><body>%@</body></html>", talk] autorelease];
+	NSLog(@"%@", html);
+	return html;
 }
 
 /*
@@ -66,6 +61,7 @@
 
 
 - (void)dealloc {
+	self.webView = nil;
 	[nick release];
 	[datetime release];
 	[talk release];
