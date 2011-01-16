@@ -23,6 +23,9 @@
 
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+	
+	isFirstLoad = YES;
+	[self initData];
 }
 
 -(void)refreshData {
@@ -35,7 +38,7 @@
 		NSString *jsonString = [NSString stringWithContentsOfURL:[NSURL URLWithString:url]
 														encoding:NSUTF8StringEncoding
 														   error:nil];
-		NSLog(@"[refreshDate] request url = %@, json = %@", url, jsonString);
+		//NSLog(@"[refreshDate] request url = %@, json = %@", url, jsonString);
 		NSDictionary *data = [jsonString JSONValue];
 		
 		if(data != nil && [[data objectForKey:@"result"] isEqualToNumber:[NSNumber numberWithInt:200]]) {		
@@ -88,10 +91,6 @@
 	
 	if(data != nil && [result isEqualToNumber:[NSNumber numberWithInt:200]]) {
 		self.list = [data objectForKey:@"data"];
-		[self.tableView reloadData];
-		[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.list count]-1 inSection:0]
-							  atScrollPosition:UITableViewScrollPositionNone
-									  animated:YES];
 	}
 	else {
 		[list release];
@@ -136,7 +135,14 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-	[self initData];
+	
+	if(isFirstLoad) {
+		[self.tableView reloadData];
+		[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.list count]-1 inSection:0]
+							  atScrollPosition:UITableViewScrollPositionNone
+									  animated:YES];
+		isFirstLoad = NO;
+	}
 }
 
 

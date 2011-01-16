@@ -24,10 +24,10 @@
 		DF7A3A7E12C90D4D0030AC53 /* ChatTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7A3A7D12C90D4D0030AC53 /* ChatTableViewCell.m */; };
 		DF7A3B5B12C929B90030AC53 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DF7A3B5A12C929B90030AC53 /* icon.png */; };
 		DF93092D12CA85B200826E47 /* IFTweetLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DF93092C12CA85B200826E47 /* IFTweetLabel.m */; };
-		DF93093312CA85C100826E47 /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = DF93093012CA85C100826E47 /* RegexKitLite.m */; };
-		DF93093412CA85C100826E47 /* RKLMatchEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = DF93093212CA85C100826E47 /* RKLMatchEnumerator.m */; };
 		DF93099F12CA91A800826E47 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DF93099D12CA91A800826E47 /* DetailViewController.m */; };
 		DF9309A012CA91A800826E47 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF93099E12CA91A800826E47 /* DetailViewController.xib */; };
+		DFCC00FE12E33FAF006410EE /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCC00FB12E33FAF006410EE /* RegexKitLite.m */; };
+		DFCC00FF12E33FAF006410EE /* RKLMatchEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCC00FD12E33FAF006410EE /* RKLMatchEnumerator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,13 +62,13 @@
 		DF7A3B5A12C929B90030AC53 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		DF93092B12CA85B200826E47 /* IFTweetLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IFTweetLabel.h; path = IFTweetLabel/IFTweetLabel.h; sourceTree = "<group>"; };
 		DF93092C12CA85B200826E47 /* IFTweetLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IFTweetLabel.m; path = IFTweetLabel/IFTweetLabel.m; sourceTree = "<group>"; };
-		DF93092F12CA85C100826E47 /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
-		DF93093012CA85C100826E47 /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
-		DF93093112CA85C100826E47 /* RKLMatchEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLMatchEnumerator.h; sourceTree = "<group>"; };
-		DF93093212CA85C100826E47 /* RKLMatchEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKLMatchEnumerator.m; sourceTree = "<group>"; };
 		DF93099C12CA91A800826E47 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		DF93099D12CA91A800826E47 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		DF93099E12CA91A800826E47 /* DetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
+		DFCC00FA12E33FAF006410EE /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
+		DFCC00FB12E33FAF006410EE /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
+		DFCC00FC12E33FAF006410EE /* RKLMatchEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLMatchEnumerator.h; sourceTree = "<group>"; };
+		DFCC00FD12E33FAF006410EE /* RKLMatchEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKLMatchEnumerator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				DF1229B712CB4C4F00B6CE67 /* Config.h */,
+				DFCC00F912E33FAF006410EE /* RegexKitLite */,
 				DF93092312CA858100826E47 /* IFTweetLabel */,
 				DF7A39BC12C8D6160030AC53 /* json */,
 				28C286DF0D94DF7D0034E888 /* RootViewController.h */,
@@ -176,23 +177,21 @@
 		DF93092312CA858100826E47 /* IFTweetLabel */ = {
 			isa = PBXGroup;
 			children = (
-				DF93092E12CA85C100826E47 /* RegexKitLite */,
 				DF93092B12CA85B200826E47 /* IFTweetLabel.h */,
 				DF93092C12CA85B200826E47 /* IFTweetLabel.m */,
 			);
 			name = IFTweetLabel;
 			sourceTree = "<group>";
 		};
-		DF93092E12CA85C100826E47 /* RegexKitLite */ = {
+		DFCC00F912E33FAF006410EE /* RegexKitLite */ = {
 			isa = PBXGroup;
 			children = (
-				DF93092F12CA85C100826E47 /* RegexKitLite.h */,
-				DF93093012CA85C100826E47 /* RegexKitLite.m */,
-				DF93093112CA85C100826E47 /* RKLMatchEnumerator.h */,
-				DF93093212CA85C100826E47 /* RKLMatchEnumerator.m */,
+				DFCC00FA12E33FAF006410EE /* RegexKitLite.h */,
+				DFCC00FB12E33FAF006410EE /* RegexKitLite.m */,
+				DFCC00FC12E33FAF006410EE /* RKLMatchEnumerator.h */,
+				DFCC00FD12E33FAF006410EE /* RKLMatchEnumerator.m */,
 			);
-			name = RegexKitLite;
-			path = IFTweetLabel/RegexKitLite;
+			path = RegexKitLite;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,9 +269,9 @@
 				DF7A39F012C8D6F70030AC53 /* SBJsonWriter.m in Sources */,
 				DF7A3A7E12C90D4D0030AC53 /* ChatTableViewCell.m in Sources */,
 				DF93092D12CA85B200826E47 /* IFTweetLabel.m in Sources */,
-				DF93093312CA85C100826E47 /* RegexKitLite.m in Sources */,
-				DF93093412CA85C100826E47 /* RKLMatchEnumerator.m in Sources */,
 				DF93099F12CA91A800826E47 /* DetailViewController.m in Sources */,
+				DFCC00FE12E33FAF006410EE /* RegexKitLite.m in Sources */,
+				DFCC00FF12E33FAF006410EE /* RKLMatchEnumerator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

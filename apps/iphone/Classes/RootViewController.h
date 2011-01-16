@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface RootViewController : UITableViewController {
+	
+	BOOL isFirstLoad;
+	
 	NSString *currentTitle;
 	NSString *channel;
 	NSString *year;

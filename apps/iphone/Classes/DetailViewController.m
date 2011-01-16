@@ -8,6 +8,11 @@
 
 #import "DetailViewController.h"
 
+#define RKL_BLOCKS 0
+// http://www.cocoabuilder.com/archive/cocoa/288966-applications-using-regexkitlite-no-longer-being-accepted-at-the-appstore.html
+#import "RegexKitLite/RegexKitLite.h"
+
+
 @implementation DetailViewController
 @synthesize nickLabel, datetimeLabel, webView;
 @synthesize nick, datetime, talk;
@@ -32,9 +37,15 @@
 	[self.webView loadHTMLString:[self makeHTML] baseURL:[NSURL URLWithString:@""]];
 }
 
+#define REGEX_URL @"([hH][tT][tT][pP][sS]?:\\/\\/[^ ,'\">\\]\\)]*[^\\. ,'\">\\]\\)])"
+#define HTML_DETAIL @"<html><head><meta name=\"viewport\" content=\"width=320px;\"/><style>* { word-wrap: break-word; } a,a:link,a:visited { text-decoration: none; font-weight: 900; } body {margin: 0px; padding: 0px} .ct { margin: 5px; padding: 5px; width: 300px; height: 200px; background-color: #BBDDFF; }</style></head><body><div class=\"ct\">%@</div></body></html>"
 - (NSString *)makeHTML {
-	NSString *html = [[[NSString alloc]initWithFormat:@"<html><head></head><body>%@</body></html>", talk] autorelease];
-	NSLog(@"%@", html);
+	
+	NSString *html = [[[NSString alloc] initWithFormat:HTML_DETAIL, [talk stringByReplacingOccurrencesOfRegex:REGEX_URL withString:@"<a href=\"$1\">$1</a>"]] autorelease];
+
+	//NSLog(@"%@ => %@", talk, );
+	//NSLog(@"%@", html);
+	
 	return html;
 }
 
