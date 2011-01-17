@@ -38,7 +38,7 @@
 }
 
 #define REGEX_URL1 @"([hH][tT][tT][pP][sS]?:\\/\\/[^ ,'\">\\]\\)]*[^\\. ,'\">\\]\\)])"
-#define REGEX_URL2 @"([hH][tT][tT][pP][sS]?:\\/\\/[a-zA-Z0-9$\\-_\\.\\+!\\*',%\\/\\?\\=\\&\\#\\:\\;]*)"
+#define REGEX_URL2 @"([hH][tT][tT][pP][sS]?:\\/\\/[a-zA-Z0-9$\\-_\\.\\+!\\*',%\\/\\?=&#:;~]*)"
 #define REGEX_URL REGEX_URL2
 #define REGEX_PERL_MODULE @"([a-zA-Z][a-zA-Z0-9]+::[a-zA-Z][a-zA-Z0-9]+)"
 #define HTML_DETAIL @"<html><head><meta name=\"viewport\" content=\"width=320px;\"/><style>* { word-wrap: break-word; } a,a:link,a:visited { text-decoration: none; font-weight: 900; } body {margin: 0px; padding: 0px} .ct { margin: 5px; padding: 5px; width: 300px; height: 200px; background-color: #BBDDFF; }</style></head><body><div>Nick : %@</div><div>Time : %@</div><div class=\"ct\">%@</div></body></html>"
