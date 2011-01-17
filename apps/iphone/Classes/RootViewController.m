@@ -50,9 +50,6 @@
 			[newList release];
 			
 			[self.tableView reloadData];
-			[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.list count]-1 inSection:0]
-								  atScrollPosition:UITableViewScrollPositionNone
-										  animated:YES];
 		}
 	}
 }
@@ -84,7 +81,7 @@
 	NSString *jsonString = [NSString stringWithContentsOfURL:[NSURL URLWithString:url]
 													encoding:NSUTF8StringEncoding
 													   error:nil];
-	NSLog(@"request url = %@, json = %@", url, jsonString);
+	//NSLog(@"request url = %@, json = %@", url, jsonString);
 	NSDictionary *data = [jsonString JSONValue];
 	//NSLog(@"data = %@, data.data=%@, data.result=%@", data, [data objectForKey:@"data"], [data objectForKey:@"result"]);
 	NSNumber *result = [data objectForKey:@"result"];

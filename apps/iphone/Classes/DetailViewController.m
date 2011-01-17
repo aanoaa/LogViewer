@@ -32,16 +32,24 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 	
-	nickLabel.text = nick;
-	datetimeLabel.text = datetime;
+	//nickLabel.text = nick;
+	//datetimeLabel.text = datetime;
 	[self.webView loadHTMLString:[self makeHTML] baseURL:[NSURL URLWithString:@""]];
 }
 
-#define REGEX_URL @"([hH][tT][tT][pP][sS]?:\\/\\/[^ ,'\">\\]\\)]*[^\\. ,'\">\\]\\)])"
-#define HTML_DETAIL @"<html><head><meta name=\"viewport\" content=\"width=320px;\"/><style>* { word-wrap: break-word; } a,a:link,a:visited { text-decoration: none; font-weight: 900; } body {margin: 0px; padding: 0px} .ct { margin: 5px; padding: 5px; width: 300px; height: 200px; background-color: #BBDDFF; }</style></head><body><div class=\"ct\">%@</div></body></html>"
+#define REGEX_URL1 @"([hH][tT][tT][pP][sS]?:\\/\\/[^ ,'\">\\]\\)]*[^\\. ,'\">\\]\\)])"
+#define REGEX_URL2 @"([hH][tT][tT][pP][sS]?:\\/\\/[a-zA-Z0-9$\\-_\\.\\+!\\*',%\\/\\?\\=\\&\\#\\:\\;]*)"
+#define REGEX_URL REGEX_URL2
+#define REGEX_PERL_MODULE @"([a-zA-Z][a-zA-Z0-9]+::[a-zA-Z][a-zA-Z0-9]+)"
+#define HTML_DETAIL @"<html><head><meta name=\"viewport\" content=\"width=320px;\"/><style>* { word-wrap: break-word; } a,a:link,a:visited { text-decoration: none; font-weight: 900; } body {margin: 0px; padding: 0px} .ct { margin: 5px; padding: 5px; width: 300px; height: 200px; background-color: #BBDDFF; }</style></head><body><div>Nick : %@</div><div>Time : %@</div><div class=\"ct\">%@</div></body></html>"
 - (NSString *)makeHTML {
 	
-	NSString *html = [[[NSString alloc] initWithFormat:HTML_DETAIL, [talk stringByReplacingOccurrencesOfRegex:REGEX_URL withString:@"<a href=\"$1\">$1</a>"]] autorelease];
+	NSString *auto_link;
+	auto_link = [talk stringByReplacingOccurrencesOfRegex:REGEX_URL withString:@"<a href=\"$1\">$1</a>"];
+	NSLog(@"auto_link1 = %@", auto_link);
+	auto_link = [auto_link stringByReplacingOccurrencesOfRegex:REGEX_PERL_MODULE withString:@"<a href=\"http://search.cpan.org/perldoc?$1\">$1</a>"];
+	NSLog(@"auto_link2 = %@", auto_link);
+	NSString *html = [[[NSString alloc] initWithFormat:HTML_DETAIL, nick, datetime, auto_link] autorelease];
 
 	//NSLog(@"%@ => %@", talk, );
 	//NSLog(@"%@", html);
