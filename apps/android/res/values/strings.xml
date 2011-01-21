@@ -30,6 +30,8 @@
     <string name="title_format3">%1$s - IRC Log Viewer</string>
     <string name="title_format_search">%1$s - Search Result</string>
     
+    <string name="temp"><b>good</b></string>
+    
     <string name="no_search_result">no logs for %1$s</string>
     <string name="no_mention_result">no mention for %1$s</string>
     <string name="who_to_mention">mention for %1$s</string>
