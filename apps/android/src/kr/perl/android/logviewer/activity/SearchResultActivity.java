@@ -63,7 +63,7 @@ public class SearchResultActivity extends ListActivity {
 				return;
 			}
 			
-		    search(cursor);
+			search(cursor);
 		} else if (Intent.ACTION_VIEW.equals(action)) {
 			Uri uri = intent.getData();
 			String date = intent.getStringExtra("date");
@@ -125,11 +125,11 @@ public class SearchResultActivity extends ListActivity {
 					category = new LinkedList<Map<String,?>>();
 				}
 				
-				category.add(createItem(PROJECTION, new String[] { new StringBuilder().append(id).toString(), time, nickname, message }));	
+				category.add(createItem(PROJECTION, new String[] { new StringBuilder().append(id).toString(), time, nickname, message }));
 				
 				String nextDate = "";
 				if (cursor.isLast()) {
-					adapter.addSection(date, new SimpleAdapter(this, category, R.layout.list_complex, new String[] { Logs.NICKNAME, Logs.MESSAGE }, new int[] { R.id.list_complex_title, R.id.list_complex_caption }));
+					adapter.addSection(date, new SimpleAdapter(this, category, R.layout.list_complex, new String[] { Logs.NICKNAME, Logs.CREATED_ON, Logs.MESSAGE }, new int[] { R.id.list_complex_title, R.id.list_complex_caption_title, R.id.list_complex_caption_content }));
 				} else {
 					if (cursor.moveToNext()) {
 						nextDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date((long) cursor.getInt(cursor.getColumnIndex(Logs.CREATED_ON)) * 1000));
@@ -137,7 +137,7 @@ public class SearchResultActivity extends ListActivity {
 					}
 					
 					if (!nextDate.equals(date)) {
-						adapter.addSection(date, new SimpleAdapter(this, category, R.layout.list_complex, new String[] { Logs.NICKNAME, Logs.MESSAGE }, new int[] { R.id.list_complex_title, R.id.list_complex_caption }));
+						adapter.addSection(date, new SimpleAdapter(this, category, R.layout.list_complex, new String[] { Logs.NICKNAME, Logs.CREATED_ON, Logs.MESSAGE }, new int[] { R.id.list_complex_title, R.id.list_complex_caption_title, R.id.list_complex_caption_content }));
 					}
 				}
 				
