@@ -95,7 +95,10 @@ public class ViewerActivity extends ListActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		mPrefs.edit().putInt(getString(R.string.pref_latest_position), mList.getLastVisiblePosition()).commit();
+		int latest_position = mList.getLastVisiblePosition() - 10;
+		
+		if (latest_position < 0) latest_position = 0;
+		mPrefs.edit().putInt(getString(R.string.pref_latest_position), latest_position).commit();
 		mPrefs.edit().putString(getString(R.string.pref_latest_date), mStrDate).commit();
 	}
 	
