@@ -50,6 +50,8 @@ public class ViewerActivity extends ListActivity {
 	private Cursor mCursor;
 	private ListView mList;
 	
+	SharedPreferences mPrefs;
+	
 	public Map<String,?> createItem(String[] keys, String[] values) {
 		Map<String,String> item = new HashMap<String,String>();
 		for (int i=0; i<keys.length; i++) item.put(keys[i], values[i]);
@@ -69,9 +71,9 @@ public class ViewerActivity extends ListActivity {
 	private void handleIntent(Intent intent) {
 		String action = intent.getAction();
 		if (Intent.ACTION_MAIN.equals(action)) {
-			mStrDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			mChannel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+			mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+			mStrDate = mPrefs.getString(getString(R.string.pref_latest_date), new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis())));
+			mChannel = mPrefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
 			mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
 	    	startManagingCursor(mCursor);
 	    	setListAdapter(getAdapter());
@@ -87,6 +89,14 @@ public class ViewerActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
+		mList.setSelection(mPrefs.getInt(getString(R.string.pref_latest_position), 0));
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		mPrefs.edit().putInt(getString(R.string.pref_latest_position), mList.getLastVisiblePosition()).commit();
+		mPrefs.edit().putString(getString(R.string.pref_latest_date), mStrDate).commit();
 	}
 	
 	@Override
@@ -97,6 +107,7 @@ public class ViewerActivity extends ListActivity {
 	
 	@Override
     public void onListItemClick(ListView parent, View v, int position, long id) {
+		// Not Yet Implemented, goto Detail Activity
     }
 	
 	@Override
@@ -124,7 +135,7 @@ public class ViewerActivity extends ListActivity {
 			break;
 			
 	    case R.id.settings:
-	    	startActivity(new Intent(getApplicationContext(), LogPreference.class));
+	    	startActivity(new Intent(this, LogPreference.class));
 	    	break;
 	    	
 	    case R.id.pick:
@@ -339,7 +350,6 @@ public class ViewerActivity extends ListActivity {
 			@Override
 			public void onChange(boolean selfChange) {
 				super.onChange(selfChange);
-				mList.setSelection(mCursor.getCount());
 			}
 		});
 	}
