@@ -49,6 +49,17 @@
         </activity>
         
         <activity
+            android:name=".activity.StatusActivity"
+            android:label="@string/activity_search_result"
+            android:launchMode="singleTop">
+            <intent-filter>
+        		<action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.kr.perl.log" /> <!-- CONTENT_ITEM_TYPE @kr.perl.provider.LogViewer -->
+        	</intent-filter>
+        </activity>
+        
+        <activity
         	android:name=".preference.LogPreference"
         	android:label="@string/activity_prefrence">
         	<intent-filter>

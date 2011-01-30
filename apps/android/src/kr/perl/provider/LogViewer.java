@@ -9,6 +9,7 @@ public final class LogViewer {
         public static final String CHANNEL      = "channel";
         public static final String NICKNAME     = "nickname";
         public static final String MESSAGE      = "message";
+        public static final String FAVORITE     = "favorite";
         public static final String CREATED_ON   = "created_on";
 
         public static final String AUTHORITY            = "kr.perl.provider.LogViewer.Log";

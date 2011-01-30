@@ -25,7 +25,7 @@ public class LogProvider extends ContentProvider {
     public static final String[]    PROJECTION  = new String[] { Logs._ID, Logs.CHANNEL, Logs.NICKNAME, Logs.MESSAGE, Logs.CREATED_ON };
 
     private static final String DATABASE_NAME       = "log.db";
-    private static final int    DATABASE_VERSION    = 1;
+    private static final int    DATABASE_VERSION    = 2;
 
     private static final int LOG = 1;       // for all
     private static final int LOG_ID = 2;    // for a row
@@ -43,6 +43,7 @@ public class LogProvider extends ContentProvider {
         sLogsProjectionMap.put(Logs.CHANNEL,      Logs.CHANNEL);
         sLogsProjectionMap.put(Logs.NICKNAME,     Logs.NICKNAME);
         sLogsProjectionMap.put(Logs.MESSAGE,      Logs.MESSAGE);
+        sLogsProjectionMap.put(Logs.FAVORITE,     Logs.FAVORITE);
         sLogsProjectionMap.put(Logs.CREATED_ON,   Logs.CREATED_ON);
     }
 
@@ -58,6 +59,7 @@ public class LogProvider extends ContentProvider {
                 + Logs.CHANNEL +       " TEXT NOT NULL,"
                 + Logs.NICKNAME +      " TEXT,"
                 + Logs.MESSAGE +       " TEXT,"
+                + Logs.FAVORITE +      " INTEGER DEFAULT 0, "
                 + Logs.CREATED_ON +    " INTEGER NOT NULL"
                 + ");");
         }
@@ -65,7 +67,7 @@ public class LogProvider extends ContentProvider {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXIST " + Logs.TABLE_NAME + ";"); // Expedients
+            db.execSQL("DROP TABLE IF EXISTS " + Logs.TABLE_NAME + ";"); // Expedients
             onCreate(db);
         }
     }
@@ -104,7 +106,7 @@ public class LogProvider extends ContentProvider {
                 orderBy = sortOrder;
             }
 
-            SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
+            SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
             Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
             c.setNotificationUri(getContext().getContentResolver(), uri);
 

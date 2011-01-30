@@ -14,11 +14,11 @@ import kr.perl.android.logviewer.preference.LogPreference;
 import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
-import kr.perl.provider.LogViewer;
 import kr.perl.provider.LogViewer.Logs;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
@@ -41,7 +41,7 @@ public class ViewerActivity extends ListActivity {
 	
 	private static final String TAG = "ViewerActivity";
 	private static final String[] PROJECTION = new String[] { Logs._ID, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
-	private static final String SELECTION = "date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ? and " + Logs.CHANNEL + " = ?";
+	private static final String SELECTION = "date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ? AND " + Logs.CHANNEL + " = ?";
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int GESTURE_REQUEST = 0;
 	
@@ -70,14 +70,35 @@ public class ViewerActivity extends ListActivity {
 	
 	private void handleIntent(Intent intent) {
 		String action = intent.getAction();
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		mStrDate = mPrefs.getString(getString(R.string.pref_latest_date), new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis())));
+		mChannel = mPrefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
 		if (Intent.ACTION_MAIN.equals(action)) {
-			mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-			mStrDate = mPrefs.getString(getString(R.string.pref_latest_date), new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis())));
-			mChannel = mPrefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
 			mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
 	    	startManagingCursor(mCursor);
 	    	setListAdapter(getAdapter());
 			refresh();
+			mList.setSelection(mPrefs.getInt(getString(R.string.pref_latest_position), 0));
+		} else if (Intent.ACTION_VIEW.equals(action)) {
+			mStrDate = intent.getStringExtra("strDate");
+			mChannel = intent.getStringExtra("channel");
+			Log.d(TAG, "mStrDate:" + mStrDate);
+			Log.d(TAG, "mChannel:" + mChannel);
+			int id = Integer.parseInt(intent.getStringExtra("id"));
+			mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
+			startManagingCursor(mCursor);
+	    	setListAdapter(getAdapter());
+	    	refresh();
+	    	
+	    	if (mCursor.moveToFirst()) {
+	    		do {
+	    			int _id = mCursor.getInt(mCursor.getColumnIndex(Logs._ID));
+	    			if (id == _id) {
+	    				mList.setSelection(mCursor.getPosition());
+	    				break;
+	    			}
+	    		} while (mCursor.moveToNext());
+	    	}
 		} else {
 			Log.e(TAG, "Unknown action");
 			finish();
@@ -89,7 +110,6 @@ public class ViewerActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
-		mList.setSelection(mPrefs.getInt(getString(R.string.pref_latest_position), 0));
 	}
 	
 	@Override
@@ -109,9 +129,11 @@ public class ViewerActivity extends ListActivity {
     }
 	
 	@Override
-    public void onListItemClick(ListView parent, View v, int position, long id) {
-		// Not Yet Implemented, goto Detail Activity
-    }
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+		Uri uri = ContentUris.withAppendedId(Logs.CONTENT_URI, id);
+		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		startActivity(intent);
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -136,6 +158,10 @@ public class ViewerActivity extends ListActivity {
 		case R.id.search:
 			onSearchRequested();
 			break;
+		
+		case R.id.favorite:
+			onFavoriteRequested();
+			break;
 			
 	    case R.id.settings:
 	    	startActivity(new Intent(this, LogPreference.class));
@@ -150,6 +176,12 @@ public class ViewerActivity extends ListActivity {
 	    }
 	    
 	    return true;
+	}
+	
+	private void onFavoriteRequested() {
+		Intent intent = new Intent(Intent.ACTION_VIEW, Logs.CONTENT_URI);
+		intent.putExtra("isFavorite", true);
+		startActivity(intent);
 	}
 	
 	@Override
@@ -220,7 +252,7 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private void mention() {
-		Intent intent = new Intent(Intent.ACTION_VIEW, LogViewer.Logs.CONTENT_URI);
+		Intent intent = new Intent(Intent.ACTION_VIEW, Logs.CONTENT_URI);
 		intent.putExtra("date", mStrDate);
 		startActivity(intent);
 	}
