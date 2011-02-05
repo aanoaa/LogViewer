@@ -41,13 +41,19 @@
         	<intent-filter>
         		<action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.dir/vnd.kr.perl.log" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.kr.perl.log" /> <!-- CONTENT_TYPE @kr.perl.provider.LogViewer -->
+        	</intent-filter>
+        	<intent-filter>
+        		<action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.kr.perl.log" /> <!-- CONTENT_ITEM_TYPE @kr.perl.provider.LogViewer -->
         	</intent-filter>
         	<meta-data 
         		android:name="android.app.searchable"
 				android:resource="@xml/searchable"/>
         </activity>
         
+        <!-- 필요없음 
         <activity
             android:name=".activity.StatusActivity"
             android:label="@string/activity_search_result"
@@ -55,9 +61,10 @@
             <intent-filter>
         		<action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.kr.perl.log" /> <!-- CONTENT_ITEM_TYPE @kr.perl.provider.LogViewer -->
+                <data android:mimeType="vnd.android.cursor.item/vnd.kr.perl.log" />
         	</intent-filter>
         </activity>
+         -->
         
         <activity
         	android:name=".preference.LogPreference"

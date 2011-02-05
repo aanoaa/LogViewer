@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import kr.perl.android.logviewer.R;
+import kr.perl.android.logviewer.adapter.LogSimpleAdapter;
 import kr.perl.android.logviewer.adapter.SeparatedListAdapter;
 import kr.perl.android.logviewer.provider.SearchHistoryProvider;
 import kr.perl.android.logviewer.util.ContextUtil;
@@ -24,22 +25,18 @@ import android.provider.SearchRecentSuggestions;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 public class SearchResultActivity extends ListActivity {
 	
 	private static final String TAG = "SearchResultActivity";
-	private static final String[] PROJECTION = new String[] { Logs._ID, Logs.CHANNEL, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
+	private static final String[] PROJECTION = new String[] { Logs._ID, Logs.CHANNEL, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE, Logs.FAVORITE };
+	
 	private static final String SELECTION = Logs.CHANNEL + " = ? AND " + Logs.NICKNAME + "!= ? AND " + Logs.MESSAGE + " like ?";
-	
-	private static final String[] MENTION_PROJECTION = new String[] { Logs._ID, Logs.CHANNEL, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
 	private static final String MENTION_SELECTION = Logs.CHANNEL + " = ? AND " + Logs.NICKNAME + "!= ? AND " + Logs.MESSAGE + " like ? AND date(" + Logs.CREATED_ON + ", 'unixepoch', 'localtime') = ?";
-	
-	private static final String[] FAVORITE_PROJECTION = new String[] { Logs._ID, Logs.CHANNEL, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
 	private static final String FAVORITE_SELECTION = Logs.FAVORITE + " != ?";
 	
 	private static final String TIME_FORMAT = "HH:MM";
-	private static final String[] ADD_PROJECTION = new String[] { Logs._ID, Logs.CHANNEL, TIME_FORMAT, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE };
+	private static final String[] ADD_PROJECTION = new String[] { Logs._ID, Logs.CHANNEL, TIME_FORMAT, Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE, Logs.FAVORITE };
 	
 	private Cursor mCursor;
 	
@@ -55,12 +52,8 @@ public class SearchResultActivity extends ListActivity {
 	@SuppressWarnings("unchecked")
 	@Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-		
-		Log.d(TAG, "[onListItemClick]");
-		
 		if (l.getAdapter().getItemViewType(position) != SeparatedListAdapter.TYPE_SECTION_HEADER) {
 			Map<String, String> map = (HashMap<String, String>) l.getAdapter().getItem(position);
-			Log.d(TAG, map.toString());
 			Date d = new Date((long) Integer.parseInt(map.get(Logs.CREATED_ON)) * 1000);
 			String date = new SimpleDateFormat("yyyy-MM-dd").format(d);
 			Intent intent = new Intent(this, ViewerActivity.class);
@@ -76,7 +69,9 @@ public class SearchResultActivity extends ListActivity {
 	
 	private void handleIntent(Intent intent) {
 		String action = intent.getAction();
+		// TODO: AsyncTask
 		if (Intent.ACTION_SEARCH.equals(action)) {
+			// search
 			String query = intent.getStringExtra(SearchManager.QUERY);
 			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
 		    	  SearchHistoryProvider.AUTHORITY, SearchHistoryProvider.MODE);
@@ -86,43 +81,54 @@ public class SearchResultActivity extends ListActivity {
 		    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			String channel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
 			String[] selectionArgs = new String[] { channel, "", "%" + query + "%" };
-			
-			mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, selectionArgs, null);
-			startManagingCursor(mCursor);
-			if (mCursor.getCount() == 0) {
+			int result = search(Logs.CONTENT_URI, PROJECTION, SELECTION, selectionArgs, null);
+			if (result == -1) {
+				ContextUtil.toast(this, getString(R.string.error_internal));
+				finish();
+				return;
+			} else if (result == 0) {
 				ContextUtil.toast(this, String.format(getString(R.string.no_search_result, query)));
 				finish();
 				return;
 			}
-			
-			search();
 		} else if (Intent.ACTION_VIEW.equals(action)) {
-			Uri uri = intent.getData();
-			boolean isFavorite = intent.getBooleanExtra("isFavorite", false);
-			String date = intent.getStringExtra("date");
-			if (isFavorite) {
-				// nothing.. do something in onResume
+			if (Logs.CONTENT_URI.equals(intent.getData())) {
+				if (intent.getStringExtra(Logs.NICKNAME) == null) {
+					// Favorite
+				} else {
+					// mention
+					String nickname = intent.getStringExtra(Logs.NICKNAME);
+					setTitle(String.format(getString(R.string.who_to_mention), nickname));
+					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+					String channel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
+					String[] selectionArgs = new String[] { channel, "", "%" + nickname + "%", intent.getStringExtra(Logs.CREATED_ON) };
+					
+					int result = search(intent.getData(), PROJECTION, MENTION_SELECTION, selectionArgs, null);
+					if (result == -1) {
+						ContextUtil.toast(this, getString(R.string.error_internal));
+						finish();
+						return;
+					} else if (result == 0) {
+						ContextUtil.toast(this, String.format(getString(R.string.no_mention_result), nickname));
+						finish();
+						return;
+					}
+				}
+				
 			} else {
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-				String channel = prefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
-				String nickname = prefs.getString(getString(R.string.pref_nickname), "");
-				if (nickname.equals("")) {
-					ContextUtil.toast(this, getString(R.string.setting_nickname_first));
+				// one item
+				int result = search(intent.getData(), PROJECTION, null, null, null);
+				if (result <= 0) {
+					ContextUtil.toast(this, getString(R.string.error_internal));
 					finish();
 					return;
 				}
 				
-				String[] selectionArgs = new String[] { channel, "", "%" + nickname + "%", date };
-				mCursor = managedQuery(uri, MENTION_PROJECTION, MENTION_SELECTION, selectionArgs, null);
-				startManagingCursor(mCursor);
-				if (mCursor.getCount() == 0) {
-					ContextUtil.toast(this, String.format(getString(R.string.no_mention_result), nickname));
-					finish();
-					return;
-				}
-				
-				setTitle(String.format(getString(R.string.who_to_mention), nickname));
-				search();
+				String channel = mCursor.getString(mCursor.getColumnIndex(Logs.CHANNEL));
+				long created_on = mCursor.getInt(mCursor.getColumnIndex(Logs.CREATED_ON));
+				Date d = new Date((long) created_on * 1000);
+				String datetime = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss").format(d);
+				setTitle(String.format("%s %s", channel, datetime));
 			}
 		} else {
 			Log.e(TAG, "Unknown action");
@@ -135,20 +141,19 @@ public class SearchResultActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 		Intent intent = getIntent();
-		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-			Uri uri = intent.getData();
-			boolean isFavorite = intent.getBooleanExtra("isFavorite", false);
-			if (isFavorite) {
-				mCursor = managedQuery(uri, FAVORITE_PROJECTION, FAVORITE_SELECTION, new String[] { "0" }, null);
-				startManagingCursor(mCursor);
-				if (mCursor.getCount() == 0) {
+		if (Logs.CONTENT_URI.equals(intent.getData())) {
+			if (intent.getStringExtra(Logs.NICKNAME) == null) {
+				setTitle(getString(R.string.favorite));
+				int result = search(intent.getData(), PROJECTION, FAVORITE_SELECTION, new String[] { "0" }, null);
+				if (result == -1) {
+					ContextUtil.toast(this, getString(R.string.error_internal));
+					finish();
+					return;
+				} else if (result == 0) {
 					ContextUtil.toast(this, getString(R.string.error_no_favorite));
 					finish();
 					return;
 				}
-				
-				setTitle(getString(R.string.favorite));
-				search();
 			}
 		}
 	}
@@ -165,7 +170,19 @@ public class SearchResultActivity extends ListActivity {
 		return item;
 	}
 	
-	private void search() {
+	/*
+	 * [Return Value]
+	 * -1: search failed
+	 *  0: result count is 0
+	 *  N: search rows
+	 */
+	private int search(Uri uri, String[] projection, String selection, String[] selectionArgs, String orderBy) {
+		mCursor = managedQuery(uri, projection, selection, selectionArgs, orderBy);
+		startManagingCursor(mCursor);
+		if (mCursor.getCount() == 0) {
+			return 0;
+		}
+		
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		List<Map<String,?>> category = null;
 		String prevDate = "";
@@ -179,16 +196,25 @@ public class SearchResultActivity extends ListActivity {
 				String time = new SimpleDateFormat("HH:mm").format(d);
 				String nickname = mCursor.getString(mCursor.getColumnIndex(Logs.NICKNAME));
 				String message = mCursor.getString(mCursor.getColumnIndex(Logs.MESSAGE));
+				boolean isFavorite = mCursor.getInt(mCursor.getColumnIndex(Logs.FAVORITE)) != 0;
 				
 				if (mCursor.isFirst() || !prevDate.equals(date)) {
 					category = new LinkedList<Map<String,?>>();
 				}
 				
-				category.add(createItem(ADD_PROJECTION, new String[] { new StringBuilder().append(id).toString(), channel, time, new StringBuilder().append(created_on).toString(), nickname, message }));
+				category.add(createItem(ADD_PROJECTION, new String[] {
+						new StringBuilder().append(id).toString(), 
+						channel, 
+						time, 
+						new StringBuilder().append(created_on).toString(), 
+						nickname, 
+						message, 
+						new StringBuilder().append(isFavorite).toString()
+				}));
 				
 				String nextDate = "";
 				if (mCursor.isLast()) {
-					adapter.addSection(date, new SimpleAdapter(this, category, R.layout.list_complex, new String[] { Logs.NICKNAME, TIME_FORMAT, Logs.MESSAGE }, new int[] { R.id.list_complex_title, R.id.list_complex_caption_title, R.id.list_complex_caption_content }));
+					adapter.addSection(date, new LogSimpleAdapter(this, category, R.layout.list_complex, null, null)); // from, to 가 의미없음
 				} else {
 					if (mCursor.moveToNext()) {
 						nextDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date((long) mCursor.getInt(mCursor.getColumnIndex(Logs.CREATED_ON)) * 1000));
@@ -196,7 +222,7 @@ public class SearchResultActivity extends ListActivity {
 					}
 					
 					if (!nextDate.equals(date)) {
-						adapter.addSection(date, new SimpleAdapter(this, category, R.layout.list_complex, new String[] { Logs.NICKNAME, TIME_FORMAT, Logs.MESSAGE }, new int[] { R.id.list_complex_title, R.id.list_complex_caption_title, R.id.list_complex_caption_content }));
+						adapter.addSection(date, new LogSimpleAdapter(this, category, R.layout.list_complex, null, null)); // from, to 가 의미없음
 					}
 				}
 				
@@ -205,6 +231,9 @@ public class SearchResultActivity extends ListActivity {
 		}
 		
 		getListView().setAdapter(adapter);
+		
+		mCursor.moveToFirst();
+		return mCursor.getCount();
 	}
 	
 	private void init() {

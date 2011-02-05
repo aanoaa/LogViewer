@@ -5,25 +5,39 @@
 	android:orientation="vertical"
 	android:paddingTop="10dip"
 	android:paddingBottom="10dip"
-	android:paddingLeft="15dip">
-	
-	<TextView
-			android:id="@+id/list_complex_title"
+	android:paddingLeft="15dip"
+	android:focusable="true"
+	android:clickable="true">
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:padding="10dip">
+		<TextView
+			android:id="@+id/text2"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
+			android:layout_weight="1"
 			android:textAppearance="?android:attr/textAppearanceLarge" />
+		<CheckBox
+			android:id="@+id/checkbox1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="0"
+			style="?android:attr/starStyle" />
+	</LinearLayout>
 	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal">
 		<TextView
-			android:id="@+id/list_complex_caption_title"
+			android:id="@+id/text1"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="0"
 			android:textSize="12sp" />
 		<TextView
-			android:id="@+id/list_complex_caption_content"
+			android:id="@+id/text3"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:paddingLeft="10dip"

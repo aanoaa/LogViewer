@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.provider.LogViewer.Logs;
 import android.content.Context;
@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class LogAdapter extends SimpleCursorAdapter {
+public class LogCursorAdapter extends SimpleCursorAdapter {
 	
 	private int[] COLORS = new int[] {
 		-6351338, -2205865, -6337258, -2205754, -6316778, -6858786,
@@ -31,15 +31,13 @@ public class LogAdapter extends SimpleCursorAdapter {
 	private int mResourceId;
 	private Map<String, Integer> mNickname;
 	private int mIndex;
-	private Pattern pWhitecat;
 	
-	public LogAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+	public LogCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
 		super(context, layout, c, from, to);
 		mContext = context;
 		mResourceId = layout;
 		mNickname = new HashMap<String, Integer>();
 		mIndex = 0;
-		pWhitecat = Pattern.compile("(whitecat|agcraft)", Pattern.CASE_INSENSITIVE);
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -62,7 +60,7 @@ public class LogAdapter extends SimpleCursorAdapter {
         String nickname = c.getString(index);
         index = c.getColumnIndex(Logs.MESSAGE);
         String message = c.getString(index);
-
+        
         TextView tvTime = (TextView) row.findViewById(R.id.text1);
         TextView tvNickname = (TextView) row.findViewById(R.id.text2);
         TextView tvMessage = (TextView) row.findViewById(R.id.text3);
@@ -79,7 +77,7 @@ public class LogAdapter extends SimpleCursorAdapter {
 
         tvMessage.setTextColor(Color.LTGRAY);
         if (!mNickname.containsKey(nickname)) {
-        	Matcher m = pWhitecat.matcher(nickname);
+        	Matcher m = Constants.PATTERN_WHITECAT.matcher(nickname);
         	if (m.find()) {
         		mNickname.put(nickname, -2302756);
         	} else {

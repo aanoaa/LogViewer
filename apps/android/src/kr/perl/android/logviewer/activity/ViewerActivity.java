@@ -9,7 +9,7 @@ import java.util.Map;
 
 import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
-import kr.perl.android.logviewer.adapter.LogAdapter;
+import kr.perl.android.logviewer.adapter.LogCursorAdapter;
 import kr.perl.android.logviewer.preference.LogPreference;
 import kr.perl.android.logviewer.thread.SyncThread;
 import kr.perl.android.logviewer.util.ContextUtil;
@@ -131,7 +131,7 @@ public class ViewerActivity extends ListActivity {
 	@Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
 		Uri uri = ContentUris.withAppendedId(Logs.CONTENT_URI, id);
-		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		Intent intent = new Intent(Intent.ACTION_VIEW, uri); // mimeType => vnd.android.cursor.item/vnd.kr.perl.log
 		startActivity(intent);
 	}
 	
@@ -179,8 +179,7 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private void onFavoriteRequested() {
-		Intent intent = new Intent(Intent.ACTION_VIEW, Logs.CONTENT_URI);
-		intent.putExtra("isFavorite", true);
+		Intent intent = new Intent(Intent.ACTION_VIEW, Logs.CONTENT_URI);  // mimeType => vnd.android.cursor.dir/vnd.kr.perl.log
 		startActivity(intent);
 	}
 	
@@ -253,7 +252,14 @@ public class ViewerActivity extends ListActivity {
 	
 	private void mention() {
 		Intent intent = new Intent(Intent.ACTION_VIEW, Logs.CONTENT_URI);
-		intent.putExtra("date", mStrDate);
+		String nickname = mPrefs.getString(getString(R.string.pref_nickname), "");
+		if (nickname.equals("")) {
+			ContextUtil.toast(this, getString(R.string.setting_nickname_first));
+			return;
+		}
+		
+		intent.putExtra(Logs.NICKNAME, nickname);
+		intent.putExtra(Logs.CREATED_ON, mStrDate);
 		startActivity(intent);
 	}
 	
@@ -400,8 +406,8 @@ public class ViewerActivity extends ListActivity {
 		setListAdapter(getAdapter());
 	}
     
-    private LogAdapter getAdapter() {
-		return new LogAdapter(
+    private LogCursorAdapter getAdapter() {
+		return new LogCursorAdapter(
 				this, 
 				R.layout.log_row, 
 				mCursor, 
