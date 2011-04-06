@@ -11,7 +11,7 @@ import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogCursorAdapter;
 import kr.perl.android.logviewer.preference.LogPreference;
-import kr.perl.android.logviewer.thread.SyncThread;
+import kr.perl.android.logviewer.task.SyncTask;
 import kr.perl.android.logviewer.util.ContextUtil;
 import kr.perl.android.logviewer.util.StringUtil;
 import kr.perl.provider.LogViewer.Logs;
@@ -264,8 +264,9 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private void sync(final Uri uri, final String channel) {
-		Thread thread = new SyncThread(this, uri, channel);
-		thread.start();
+		if (!SyncTask.IS_QUERYING) {
+			new SyncTask(this, channel).execute(uri);
+		}
 	}
 	
 	private DatePickerDialog.OnDateSetListener mDateSetListener =
@@ -417,7 +418,7 @@ public class ViewerActivity extends ListActivity {
 	}
 	
 	private void refresh() {
-		if (SyncThread.isQuery()) {
+		if (SyncTask.IS_QUERYING) {
 			mList.setSelection(mCursor.getCount());
 			return;
 		}

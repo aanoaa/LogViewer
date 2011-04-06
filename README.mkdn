@@ -1,3 +1,0 @@
-IRC log viewer for android
-==========================
-

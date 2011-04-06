@@ -1,4 +1,4 @@
-package kr.perl.android.logviewer.thread;
+package kr.perl.android.logviewer.task;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,83 +20,88 @@ import org.json.JSONObject;
 import android.app.ListActivity;
 import android.content.ContentValues;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.widget.SimpleCursorAdapter;
 
-public class SyncThread extends Thread {
+// Params, Progress, Result
+public class SyncTask extends AsyncTask<Uri, Void, Boolean> {
 	
 	private ListActivity mActivity;
-	private Uri mUri;
 	private String mChannel;
-	private static boolean mQuery;
 	
-	public static boolean isQuery() {
-		return mQuery;
-	}
-
-	public static void setQuery(boolean flag) {
-		SyncThread.mQuery = flag;
-	}
-
-	private final Runnable threadEmptyContentRunnable = new Runnable() {
-		@Override
-		public void run() {
-			mActivity.setProgressBarIndeterminate(false);
-			if (mActivity.getListAdapter().getCount() == 0) {
-				ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.error_no_log));
-			}
-		}
-	};
+	public static boolean IS_QUERYING = false;
 	
-	private final Runnable threadLoadingBarStart = new Runnable() {
+	private final Runnable PROGRESS_BAR_START = new Runnable() {
 		@Override
 		public void run() {
 			mActivity.setProgressBarIndeterminateVisibility(true);
 		}
 	};
-
-	private final Runnable threadLoadingBarStop = new Runnable() {
+	
+	private final Runnable PROGRESS_BAR_STOP = new Runnable() {
 		@Override
 		public void run() {
 			mActivity.setProgressBarIndeterminateVisibility(false);
 		}
 	};
-		
-	public SyncThread(ListActivity activity, Uri uri, String channel) {
+
+	public SyncTask(ListActivity activity, String channel) {
 		mActivity = activity;
-		mUri = uri;
 		mChannel = channel;
-		setQuery(false);
+		IS_QUERYING = false;
 	}
 	
-	private void runUiThread(Runnable thread) {
-		mActivity.runOnUiThread(thread);
+	protected Boolean doInBackground(Uri... uris) {
+		// uri 로 부터 HTTP IO 작업 후에 DB 작업
+		if (IS_QUERYING) {
+			return false;
+		}
+		
+		IS_QUERYING = true;
+		mActivity.runOnUiThread(PROGRESS_BAR_START);
+		
+		for (Uri uri : uris) {
+			if (ContextUtil.isOnline(mActivity)) {
+				if (!sync(uri)) {
+					return false;
+				}
+			} else {
+				ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.error_connection));
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
-	private void runSync() {
+	protected void onPostExecute(Boolean flag) {
+		IS_QUERYING = false;
+		mActivity.runOnUiThread(PROGRESS_BAR_STOP);
+	}
+	
+	private boolean sync(Uri uri) {
 		HttpResponse res = null;
 		try {
-			res = HttpHelper.query(mUri);
+			res = HttpHelper.query(uri);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		if (res == null) {
-			ContextUtil.toastOnUiTread(mActivity, mActivity.getApplicationContext().getString(R.string.error_connection));
-			runUiThread(threadEmptyContentRunnable);
-			return;
+			ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.error_connection));
+			return false;
 		}
 		
 		if (res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 			ContextUtil.toastOnUiTread(mActivity, String.format(mActivity.getApplicationContext().getString(R.string.error_http_io), res.getStatusLine().getStatusCode(), res.getStatusLine().toString()));
-			runUiThread(threadEmptyContentRunnable);
-			return;
+			return false;
 		} 
 		
 		JSONObject json = null;
 		HttpEntity entity = res.getEntity();
 		if (entity == null) {
 			ContextUtil.toastOnUiTread(mActivity, "none entity"); 
-			return;
+			return false;
 		}
 		
 		InputStream instream = null;
@@ -108,13 +113,13 @@ public class SyncThread extends Thread {
 
 		if (instream == null) {
 			ContextUtil.toastOnUiTread(mActivity, "Couldn't get Entity Content");
-			return;
+			return false;
 		}
 
 		String response_body = HttpHelper.convertStreamToString(instream);
 		if (response_body == null) {
 			ContextUtil.toastOnUiTread(mActivity, "response body is null");
-			return;
+			return false;
 		}
 		
 		try {
@@ -125,7 +130,7 @@ public class SyncThread extends Thread {
 
 		if (json == null) {
 			ContextUtil.toastOnUiTread(mActivity, "Couldn't encode body text to JSON object");
-			return;
+			return false;
 		}
 
 		int result = 0;
@@ -144,14 +149,12 @@ public class SyncThread extends Thread {
 		
 		if (data == null) {
 			ContextUtil.toastOnUiTread(mActivity, "interal error");
-			runUiThread(threadEmptyContentRunnable);
-			return;
+			return false;
 		}
 
 		if (result != HttpStatus.SC_OK) {
 			ContextUtil.toastOnUiTread(mActivity, "interal error"); // 처리를 달리해줘야 할 것 같은데..
-			runUiThread(threadEmptyContentRunnable);
-			return;
+			return false;
 		}
 
 		List<ContentValues> values = new ArrayList<ContentValues>();
@@ -165,8 +168,7 @@ public class SyncThread extends Thread {
 
 			if (row == null) {
 				ContextUtil.toastOnUiTread(mActivity, "Couldn't find JSONArray[" + i + "]");
-				runUiThread(threadEmptyContentRunnable);
-				return;
+				return false;
 			}
 		
 			String nickname = null;
@@ -182,8 +184,7 @@ public class SyncThread extends Thread {
 			
 			if (nickname == null || message == null) {
 				ContextUtil.toastOnUiTread(mActivity, "cannot find entity"); // 이것도 바꿔야겟지..
-				runUiThread(threadEmptyContentRunnable);
-				return;
+				return false;
 			}
 			
 			ContentValues value = new ContentValues();
@@ -198,30 +199,19 @@ public class SyncThread extends Thread {
 			ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
 			int count = mActivity.getContentResolver().bulkInsert(Logs.CONTENT_URI, hidden);
 			ContextUtil.toastOnUiTread(mActivity, String.format(mActivity.getString(R.string.notify_add_row), count));
-			runUiThread(new Runnable() {
+			mActivity.runOnUiThread(new Runnable() {
 				public void run() {
 					((SimpleCursorAdapter) mActivity.getListAdapter()).notifyDataSetChanged();
 				}
 			});
 		} else {
-			if (mActivity.getListAdapter().getCount() != 0)	ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.log_uptodate));
-			runUiThread(threadEmptyContentRunnable);
+			if (mActivity.getListAdapter().getCount() != 0) {	
+				ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.log_uptodate));
+			}
 		}
+		
+		return true;
 	}
 	
-	@Override
-	public void run() {
-		setQuery(true);
-		try {
-			runUiThread(threadLoadingBarStart);
-			if (ContextUtil.isOnline(mActivity)) {
-				runSync();
-			} else {
-				ContextUtil.toastOnUiTread(mActivity, mActivity.getString(R.string.error_connection));
-			}
-		} finally {
-			runUiThread(threadLoadingBarStop);
-		}
-		setQuery(false);
-	}
+	
 }
