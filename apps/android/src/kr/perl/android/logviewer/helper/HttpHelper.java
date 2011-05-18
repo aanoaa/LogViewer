@@ -4,9 +4,13 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import kr.perl.android.logviewer.Constants;
+
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -20,7 +24,15 @@ public final class HttpHelper {
 		HttpConnectionParams.setConnectionTimeout(httpParameters, 10 * 1000);
 		HttpConnectionParams.setSoTimeout(httpParameters, 10 * 1000);
 
-		HttpClient httpclient = new DefaultHttpClient(httpParameters);
+		AbstractHttpClient httpclient = new DefaultHttpClient(httpParameters);
+		httpclient.getCredentialsProvider().setCredentials(
+				new AuthScope(Constants.LOG_SERVER_HOST, 80),
+				new UsernamePasswordCredentials(
+					Constants.LOG_SERVER_ID,
+					Constants.LOG_SERVER_PW
+				)
+			);
+
 		HttpGet httpget = new HttpGet(uri.toString());
 		HttpResponse response;
 		try {
