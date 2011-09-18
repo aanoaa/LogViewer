@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +28,6 @@ import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class LogSimpleAdapter extends SimpleAdapter {
-	
-	private static final String TAG = "LogSimpleAdapter";
 	
 	private int[] COLORS = new int[] {
 		-6351338, -2205865, -6337258, -2205754, -6316778, -6858786,
