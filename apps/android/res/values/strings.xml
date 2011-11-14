@@ -5,6 +5,7 @@
     <string name="search">search</string>
     <string name="search_hint">log search</string>
     <string name="package_name">kr.perl.android.logviewer</string>
+    <string name="empty">empty</string>
     
     <string name="activity_viewer">IRC Log Viewer</string>
     <string name="activity_prefrence">Preference</string>

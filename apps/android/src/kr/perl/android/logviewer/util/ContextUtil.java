@@ -21,6 +21,13 @@ public final class ContextUtil {
 		return info.isConnectedOrConnecting();
 	}
 	
+	public static boolean isOnline(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = cm.getActiveNetworkInfo();
+		if (info == null) return false;
+		return info.isConnectedOrConnecting();
+	}
+	
 	public static void toast(Activity activity, String message) {
 		final View view = LayoutInflater.from(activity.getApplicationContext()).inflate(R.layout.custom_toast, null);
 		((TextView) view.findViewById(R.id.text1)).setText(message);
@@ -40,5 +47,15 @@ public final class ContextUtil {
 				toast(a, m);
 			}
 		});
+	}
+	
+	public static void toast(Context context, String message) {
+		final View view = LayoutInflater.from(context).inflate(R.layout.custom_toast, null);
+		((TextView) view.findViewById(R.id.text1)).setText(message);
+		
+		Toast toast = new Toast(context);
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(view);
+		toast.show();
 	}
 }

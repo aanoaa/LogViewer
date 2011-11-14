@@ -1,21 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- button -->
-	<style name="button">
-		<item name="android:textColor">@color/white</item>
-		<item name="android:gravity">center</item>
-		<item name="android:background">@drawable/button_background</item>
-		<item name="android:padding">5dip</item>
-		<item name="android:singleLine">true</item>
-		<item name="android:ellipsize">marquee</item>
-	</style>
-    <style name="button.radiobutton">
-    	<item name="android:layout_margin">1dip</item>
-    	<item name="android:button">@drawable/onepixel</item>
-		<item name="android:paddingLeft">15dip</item>
-		<item name="android:paddingRight">15dip</item>
+    <style name="LogViewer"></style>
+    <style name="LogViewer.TextView" parent="@android:style/TextAppearance">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
     </style>
     
+    <style name="LogViewer.TextView.Inverse">
+        <item name="android:textColor">@color/bg</item>
+    </style>
+    
+    <style name="LogViewer.TextView.Large">
+        <item name="android:textSize">14sp</item>
+    </style>
+    
+    <style name="LogViewer.TextView.Large.Inverse">
+        <item name="android:textColor">@color/bg</item>
+    </style>
+    
+    <!-- button -->
+    <style name="button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:padding">5dip</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+    </style>
+
+    <style name="button.radiobutton">
+        <item name="android:layout_margin">1dip</item>
+        <item name="android:button">@drawable/onepixel</item>
+        <item name="android:paddingLeft">15dip</item>
+        <item name="android:paddingRight">15dip</item>
+    </style>
+    
+    <style name="LogViewer.Theme" parent="android:Theme">
+        <item name="@android:textAppearance">@style/LogViewer.TextView</item>
+        <item name="@android:textAppearanceInverse">@style/LogViewer.TextView.Inverse</item>
+        <item name="@android:textAppearanceLarge">@style/LogViewer.TextView.Large</item>
+        <item name="@android:textAppearanceLargeInverse">@style/LogViewer.TextView.Inverse</item>
+        
+        <item name="@android:windowBackground">@color/bg</item>
+        <item name="@android:buttonStyle">@style/button</item>
+        <item name="@android:radioButtonStyle">@style/button.radiobutton</item>
+    </style>
+
     <!-- textview -->
     <style name="textview">
     	<item name="android:singleLine">true</item>
@@ -49,12 +82,13 @@
         <item name="android:src">@drawable/ic_btn_round_more</item>
         <item name="android:background">@drawable/btn_circle</item>
     </style>
-<style name="gestureview">
-	<item name="android:windowFullscreen">true</item>
-	<item name="android:windowIsFloating">true</item>
-	<item name="android:windowBackground">@android:color/transparent</item>
-	<item name="android:background">@android:color/transparent</item>
-	<item name="android:windowNoTitle">true</item>
-	<item name="android:colorForeground">#000</item>
-</style>
+
+    <style name="gestureview">
+	   <item name="android:windowFullscreen">true</item>
+	   <item name="android:windowIsFloating">true</item>
+	   <item name="android:windowBackground">@android:color/transparent</item>
+	   <item name="android:background">@android:color/transparent</item>
+	   <item name="android:windowNoTitle">true</item>
+	   <item name="android:colorForeground">#000</item>
+    </style>
 </resources>

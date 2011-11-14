@@ -5,25 +5,36 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kr.perl.android.logviewer.Constants;
 import kr.perl.android.logviewer.R;
 import kr.perl.android.logviewer.adapter.LogCursorAdapter;
+import kr.perl.android.logviewer.helper.HttpHelper;
 import kr.perl.android.logviewer.preference.LogPreference;
-import kr.perl.android.logviewer.task.SyncTask;
 import kr.perl.android.logviewer.util.ContextUtil;
-import kr.perl.android.logviewer.util.StringUtil;
+import kr.perl.android.logviewer.util.JSONUtils;
 import kr.perl.provider.LogViewer.Logs;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -36,6 +47,7 @@ import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 public class ViewerActivity extends ListActivity {
 	
@@ -63,47 +75,14 @@ public class ViewerActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.viewer);
-		init();
+		mList = (ListView) findViewById(android.R.id.list);
+		
 		addHooks();
-		handleIntent(getIntent());
-	}
-	
-	private void handleIntent(Intent intent) {
-		String action = intent.getAction();
+		
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mStrDate = mPrefs.getString(getString(R.string.pref_latest_date), new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis())));
 		mChannel = mPrefs.getString(getString(R.string.pref_channel), getString(R.string.pref_channel_default));
-		if (Intent.ACTION_MAIN.equals(action)) {
-			mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
-	    	startManagingCursor(mCursor);
-	    	setListAdapter(getAdapter());
-			refresh();
-			mList.setSelection(mPrefs.getInt(getString(R.string.pref_latest_position), 0));
-		} else if (Intent.ACTION_VIEW.equals(action)) {
-			mStrDate = intent.getStringExtra("strDate");
-			mChannel = intent.getStringExtra("channel");
-			Log.d(TAG, "mStrDate:" + mStrDate);
-			Log.d(TAG, "mChannel:" + mChannel);
-			int id = Integer.parseInt(intent.getStringExtra("id"));
-			mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
-			startManagingCursor(mCursor);
-	    	setListAdapter(getAdapter());
-	    	refresh();
-	    	
-	    	if (mCursor.moveToFirst()) {
-	    		do {
-	    			int _id = mCursor.getInt(mCursor.getColumnIndex(Logs._ID));
-	    			if (id == _id) {
-	    				mList.setSelection(mCursor.getPosition());
-	    				break;
-	    			}
-	    		} while (mCursor.moveToNext());
-	    	}
-		} else {
-			Log.e(TAG, "Unknown action");
-			finish();
-			return;
-		}
+		changeDate(mStrDate);
 	}
 	
 	@Override
@@ -111,22 +90,6 @@ public class ViewerActivity extends ListActivity {
 		super.onResume();
 		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
 	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		int latest_position = mList.getLastVisiblePosition() - 10;
-		
-		if (latest_position < 0) latest_position = 0;
-		mPrefs.edit().putInt(getString(R.string.pref_latest_position), latest_position).commit();
-		mPrefs.edit().putString(getString(R.string.pref_latest_date), mStrDate).commit();
-	}
-	
-	@Override
-    public void onNewIntent(Intent intent) {
-        setIntent(intent);
-        handleIntent(intent);
-    }
 	
 	@Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -152,7 +115,6 @@ public class ViewerActivity extends ListActivity {
 		case R.id.today:
 			String strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
 			changeDate(strDate);
-			refresh();
 			
 			break;
 		case R.id.search:
@@ -220,7 +182,6 @@ public class ViewerActivity extends ListActivity {
 				ContextUtil.toast(this, "prev day");
 				try {
 					changeDate(prevDay(mStrDate));
-					refresh();
 				} catch (ParseException e) {
 					e.printStackTrace();
 					ContextUtil.toast(ViewerActivity.this, getString(R.string.error_internal));
@@ -230,7 +191,6 @@ public class ViewerActivity extends ListActivity {
 				ContextUtil.toast(this, "next day");
 				try {
 					changeDate(nextDay(mStrDate));
-					refresh();
 				} catch (ParseException e) {
 					e.printStackTrace();
 					ContextUtil.toast(ViewerActivity.this, getString(R.string.error_internal));
@@ -240,7 +200,6 @@ public class ViewerActivity extends ListActivity {
 				ContextUtil.toast(this, "today");
 				String strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
 				changeDate(strDate);
-				refresh();
 			}
 			else if (gestureName.equals("circle")) {
 				ContextUtil.toast(this, "refresh");
@@ -263,12 +222,6 @@ public class ViewerActivity extends ListActivity {
 		startActivity(intent);
 	}
 	
-	private void sync(final Uri uri, final String channel) {
-		if (!SyncTask.IS_QUERYING) {
-			new SyncTask(this, channel).execute(uri);
-		}
-	}
-	
 	private DatePickerDialog.OnDateSetListener mDateSetListener =
 		new DatePickerDialog.OnDateSetListener() {
 
@@ -282,7 +235,6 @@ public class ViewerActivity extends ListActivity {
 				.append(String.format("%02d", dayOfMonth)).toString();
 			
 			changeDate(strDate);
-			refresh();
 		}
 	};
 	
@@ -310,11 +262,7 @@ public class ViewerActivity extends ListActivity {
 		return nextDay(strDate, 1);
 	}
 	
-	private void init() {
-		mList = (ListView) findViewById(android.R.id.list);
-	}
-    
-    private void addHooks() {
+	private void addHooks() {
 		ImageButton button;
 		// prev, top, bottom, next, today, refresh
 		button = (ImageButton) findViewById(R.id.button1);
@@ -323,7 +271,6 @@ public class ViewerActivity extends ListActivity {
 			public void onClick(View v) {
 				try {
 					changeDate(prevDay(mStrDate));
-					refresh();
 				} catch (ParseException e) {
 					e.printStackTrace();
 					ContextUtil.toast(ViewerActivity.this, getString(R.string.error_internal));
@@ -353,7 +300,6 @@ public class ViewerActivity extends ListActivity {
 			public void onClick(View v) {
 				try {
 					changeDate(nextDay(mStrDate));
-					refresh();
 				} catch (ParseException e) {
 					e.printStackTrace();
 					ContextUtil.toast(ViewerActivity.this, getString(R.string.error_internal));
@@ -367,7 +313,6 @@ public class ViewerActivity extends ListActivity {
 			public void onClick(View v) {
 				String strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
 				changeDate(strDate);
-				refresh();
 			}
 		});
 		
@@ -397,32 +342,26 @@ public class ViewerActivity extends ListActivity {
 	}
     
     private void changeDate(String strDate) {
-		if (mStrDate.equals(strDate)) {
-			return;
-		}
-		
 		mStrDate = strDate;
 		setTitle(String.format(getString(R.string.title_format2), mStrDate, mChannel));
+
 		mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
-		setListAdapter(getAdapter());
-	}
-    
-    private LogCursorAdapter getAdapter() {
-		return new LogCursorAdapter(
-				this, 
+		if (mCursor.getCount() == 0) {
+			getListView().setEmptyView(findViewById(android.R.id.empty));
+		} else {
+			LogCursorAdapter adapter = new LogCursorAdapter(
+				ViewerActivity.this, 
 				R.layout.log_row, 
-				mCursor, 
-				new String[] { Logs.CREATED_ON, Logs.NICKNAME, Logs.MESSAGE }, 
-				new int[] { R.id.text1, R.id.text2, R.id.text3 }
-		);
-	}
-	
-	private void refresh() {
-		if (SyncTask.IS_QUERYING) {
-			mList.setSelection(mCursor.getCount());
-			return;
+				mCursor
+			);
+			
+			getListView().setAdapter(adapter);
 		}
 		
+		refresh();
+	}
+    
+    private void refresh() {
 		int latestEpoch = 0;
 		if (mCursor.getCount() != 0) {
 			mCursor.moveToLast();
@@ -430,21 +369,117 @@ public class ViewerActivity extends ListActivity {
 			if (!mCursor.isNull(index)) latestEpoch = mCursor.getInt(index);
 		}
 		
-		sync(buildUri(mChannel, mStrDate, latestEpoch), mChannel);
+		new LogUpdateTask().execute(buildUri(mChannel, mStrDate, latestEpoch));
 	}
 	
 	private Uri buildUri(String channel, String strDate, int epoch) {
 		String ymd[] = strDate.split("-");
-		ArrayList<String> pieces = new ArrayList<String>(ymd.length);
-		for (String item : ymd) {
-			pieces.add(item);
+		Uri uri = Constants.API_HOST.buildUpon().appendPath(channel).build();
+		for (String path : ymd) {
+			uri = uri.buildUpon().appendPath(path).build();
 		}
 		
-		String path = channel + "/" + StringUtil.join(pieces, "/");
-		if (epoch != 0) {
-			path += "/" + epoch;
-		}
-		
-		return Uri.parse(Constants.LOG_SERVER_DOMAIN + path);
+		if (epoch != 0) uri = uri.buildUpon().appendEncodedPath(String.valueOf(epoch)).build();
+		return uri;
 	}
+	
+	private class LogUpdateTask extends AsyncTask<Uri, Void, Boolean> {
+		
+		private String mMessage;
+		
+    	protected void onPreExecute () {
+    		setProgressBarIndeterminateVisibility(true);
+    		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout1);
+    		layout.setEnabled(false);
+    		ImageButton button = (ImageButton) findViewById(R.id.button6);
+    		button.setEnabled(false);
+    	}
+    	
+    	protected Boolean doInBackground(Uri... uris) {
+    		for (Uri uri : uris) {
+    			if (ContextUtil.isOnline(getApplicationContext())) {
+    				HttpResponse res = HttpHelper.query(uri);
+    				if (res == null) {
+    					Log.e(TAG, "Request failed");
+    					return null;
+    				}
+    				
+    				int status = res.getStatusLine().getStatusCode();
+    				Log.d(TAG, "HttpResponse Status: " + status);
+    				
+    				if (status != HttpStatus.SC_OK) {
+    					return null;
+    				}
+
+    				HttpEntity resEntity = res.getEntity();
+    				String content = "";
+    				try {
+    					content = EntityUtils.toString(resEntity);
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    					return null;
+    				}
+    				
+    				try {
+    					JSONObject json = JSONUtils.toJSON(content);
+    					JSONArray data = json.getJSONArray("data");
+    					List<ContentValues> values = new ArrayList<ContentValues>();
+    					for (int i=0; i<data.length(); i++) {
+    						JSONArray row = data.getJSONArray(i);
+    						String nickname = row.getString(0);
+    						String created_on = row.getString(1);
+    						String message = row.getString(2);
+    						ContentValues value = new ContentValues();
+    						value.put(Logs.CHANNEL, mChannel);
+    						value.put(Logs.NICKNAME, nickname);
+    						value.put(Logs.MESSAGE, message);
+    						value.put(Logs.CREATED_ON, created_on);
+    						values.add(value);
+    					}
+    					
+    					if (values.size() > 0) {
+    						ContentValues[] hidden = values.toArray(new ContentValues[values.size()]);
+    						int count = getApplicationContext().getContentResolver().bulkInsert(Logs.CONTENT_URI, hidden);
+    						mMessage = String.format(getString(R.string.notify_add_row), count);
+    					} else {
+    						mMessage = String.format(getString(R.string.log_uptodate));
+    					}
+    					
+    					return true;
+    				} catch (Exception e) {
+    					return null;
+    				}
+    			} else {
+    				return null;
+    			}
+    		}
+
+    		return null;
+    	}
+
+    	protected void onPostExecute(Boolean flag) {
+    		setProgressBarIndeterminateVisibility(false);
+    		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout1);
+    		layout.setEnabled(true);
+    		if (flag == null) {
+    			ContextUtil.toast(getApplicationContext(), getString(R.string.error_connection));
+    			return;
+    		}
+    		
+    		ContextUtil.toast(getApplicationContext(), mMessage);
+    		
+    		mCursor = managedQuery(Logs.CONTENT_URI, PROJECTION, SELECTION, new String[] { mStrDate, mChannel }, null);
+			if (mCursor.getCount() > 0) {
+				LogCursorAdapter adapter = new LogCursorAdapter(
+	        		ViewerActivity.this, 
+	        		R.layout.log_row, 
+	        		mCursor 
+	        	);
+
+	        	getListView().setAdapter(adapter);
+			} else {
+				getListView().setEmptyView(findViewById(android.R.id.empty));
+			}
+    	}
+    }
 }

@@ -4,23 +4,23 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="4dip">
+    android:padding="5dip">
     <TextView
     	android:id="@+id/text1"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:textSize="11sp" 
-    	android:textColor="@color/gray" />
+    	style="@style/LogViewer.TextView" />
     <TextView
     	android:id="@+id/text2"
     	android:layout_width="60dip"
     	android:layout_height="wrap_content"
-    	android:singleLine="true"
-    	android:ellipsize="marquee"
     	android:paddingLeft="5dip"
-    	android:paddingRight="5dip" />
+    	android:paddingRight="5dip"
+    	style="@style/LogViewer.TextView" />
     <TextView
     	android:id="@+id/text3"
     	android:layout_width="fill_parent"
-    	android:layout_height="wrap_content" />
+    	android:layout_height="wrap_content"
+    	android:singleLine="false"
+    	style="@style/LogViewer.TextView" />
 </LinearLayout>

@@ -17,9 +17,11 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.net.Uri;
+import android.util.Log;
 
 public final class HttpHelper {
 	public static HttpResponse query(Uri uri) {
+		Log.d("HttpHelper", uri.toString());
 		HttpParams httpParameters = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParameters, 10 * 1000);
 		HttpConnectionParams.setSoTimeout(httpParameters, 10 * 1000);

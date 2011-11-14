@@ -3,8 +3,7 @@
 	<color name="white">#ffffff</color>
 	<color name="black">#000000</color>
 	<color name="dark_orange">#ff8c00</color>
-<color name="gray">#888888</color>
-<color name="yellow">#ffff00</color>
-
-
+    <color name="gray">#888888</color>
+    <color name="yellow">#ffff00</color>
+    <color name="bg">#1a2436</color>
 </resources>

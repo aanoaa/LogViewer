@@ -5,10 +5,10 @@
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical">
 	    <RelativeLayout
+	        android:id="@+id/layout1"
 	    	android:layout_width="fill_parent"
 	    	android:layout_height="wrap_content"
 	    	android:orientation="horizontal"
-	    	android:background="#1a2436"
 	    	android:paddingTop="1dip"
 	    	android:paddingBottom="1dip">
 	    	
@@ -70,7 +70,15 @@
 	    <ListView
 	    	android:id="@id/android:list"
 	    	android:layout_width="fill_parent"
-	    	android:layout_height="fill_parent" />
+	    	android:layout_height="fill_parent"
+	    	android:cacheColorHint="#00000000" />
+	    <TextView
+            android:id="@+id/android:empty"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/empty" />
 	</LinearLayout>
 	<ImageButton
 		android:id="@+id/gesture_button"

@@ -15,10 +15,10 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleCursorAdapter;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-public class LogCursorAdapter extends SimpleCursorAdapter {
+public class LogCursorAdapter extends CursorAdapter {
 	
 	private int[] COLORS = new int[] {
 		-6351338, -2205865, -6337258, -2205754, -6316778, -6858786,
@@ -27,29 +27,48 @@ public class LogCursorAdapter extends SimpleCursorAdapter {
 		-12118369, -2172585, -7924065, -2188713, -6351238, -2205865, -6351338
 	};
 	
-	private Context mContext;
 	private int mResourceId;
+	private LayoutInflater mLayoutInflater;
 	private Map<String, Integer> mNickname;
 	private int mIndex;
 	
-	public LogCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
-		super(context, layout, c, from, to);
-		mContext = context;
-		mResourceId = layout;
-		mNickname = new HashMap<String, Integer>();
-		mIndex = 0;
-	}
+	public LogCursorAdapter (Context context, int layout, Cursor c) {
+        super(context, c);
+        mResourceId = layout;
+        mLayoutInflater = LayoutInflater.from(context);
+        mNickname = new HashMap<String, Integer>();
+    }
+	
+	@Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+		View v = mLayoutInflater.inflate(mResourceId, null);
+    	ViewHolder viewHolder = new ViewHolder();
+    	viewHolder.time = (TextView) v.findViewById(R.id.text1);
+		viewHolder.nickname = (TextView) v.findViewById(R.id.text2);
+		viewHolder.message = (TextView) v.findViewById(R.id.text3);
+    	v.setTag(viewHolder);
+    	return v;
+    }
+
+    @Override
+    public void bindView(View v, Context context, Cursor c) {
+    }
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View row;
-		
-		if (convertView == null) {
-	        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	        row = inflater.inflate(mResourceId, null);
-		} else {
-			row = convertView;
-		}
-		
+		View v = null;
+    	ViewHolder viewHolder;
+    	if (convertView == null) {
+    		v = mLayoutInflater.inflate(mResourceId, null);
+    		viewHolder = new ViewHolder();
+    		viewHolder.time = (TextView) v.findViewById(R.id.text1);
+    		viewHolder.nickname = (TextView) v.findViewById(R.id.text2);
+    		viewHolder.message = (TextView) v.findViewById(R.id.text3);
+            v.setTag(viewHolder);
+    	} else {
+    		v = convertView;
+    		viewHolder = (ViewHolder) v.getTag();
+    	}
+    	
         Cursor c = getCursor();
         c.moveToPosition(position);
         int index;
@@ -61,21 +80,17 @@ public class LogCursorAdapter extends SimpleCursorAdapter {
         index = c.getColumnIndex(Logs.MESSAGE);
         String message = c.getString(index);
         
-        TextView tvTime = (TextView) row.findViewById(R.id.text1);
-        TextView tvNickname = (TextView) row.findViewById(R.id.text2);
-        TextView tvMessage = (TextView) row.findViewById(R.id.text3);
-        
-        tvTime.setText(time);
-        tvNickname.setText(nickname);
-        tvMessage.setText(message);
+        viewHolder.time.setText(time);
+        viewHolder.nickname.setText(nickname);
+        viewHolder.message.setText(message);
         
         if (nickname.equals("")) {
-        	tvNickname.setTextColor(Color.GRAY);
-        	tvMessage.setTextColor(Color.GRAY);
-        	return row;
+        	viewHolder.nickname.setTextColor(Color.GRAY);
+        	viewHolder.message.setTextColor(Color.GRAY);
+        	return v;
         }
 
-        tvMessage.setTextColor(Color.LTGRAY);
+        viewHolder.message.setTextColor(Color.LTGRAY);
         if (!mNickname.containsKey(nickname)) {
         	Matcher m = Constants.PATTERN_WHITECAT.matcher(nickname);
         	if (m.find()) {
@@ -85,7 +100,14 @@ public class LogCursorAdapter extends SimpleCursorAdapter {
                 mNickname.put(nickname, COLORS[mIndex++]);
         	}
         }
-       	tvNickname.setTextColor(mNickname.get(nickname));
-        return row;
+
+       	viewHolder.nickname.setTextColor(mNickname.get(nickname));
+        return v;
+	}
+	
+	private class ViewHolder {
+		TextView time;
+        TextView nickname;
+        TextView message;
 	}
 }
