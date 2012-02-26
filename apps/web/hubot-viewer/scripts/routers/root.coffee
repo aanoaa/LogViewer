@@ -21,7 +21,7 @@ define [
       logs.url = "http://localhost:8888/channel/#{channel}"
       logs.fetch
         success: (collection, res) ->
-          new LogView { collection: collection }
+          new LogView { collection: collection, channel: channel }
         error: (collection, res) ->
           console.log "error: #{res}" # TODO: better error handling
     specific: (channel, date) =>

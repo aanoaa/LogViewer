@@ -15,9 +15,10 @@
   </head>
   <body class="container">
     <script type="x-template" id="channel-item-template">
-      <li><a href="#!/channel/<%= channel %>"><%= channel %></a></li>
+      <li><a href="#!/channel/<%= channel %>">#<%= channel %></a></li>
     </script>
     <script type="x-template" id="messages-template">
+      <h1>IRC log for #<%= channel %>, <%= date %></h1>
       <table>
         <thead>
           <tr>

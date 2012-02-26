@@ -41,7 +41,8 @@
         return logs.fetch({
           success: function(collection, res) {
             return new LogView({
-              collection: collection
+              collection: collection,
+              channel: channel
             });
           },
           error: function(collection, res) {

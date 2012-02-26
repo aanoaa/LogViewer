@@ -16,18 +16,35 @@
         return this.render();
       };
 
+      LogView.prototype.urlRegex = new RegExp(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig);
+
+      LogView.prototype.scriptRegex = new RegExp(/script/i);
+
       LogView.prototype.template = _.template($('#messages-item-template').html());
 
       LogView.prototype.render = function() {
-        var html, messages;
+        var dt, html, messages;
         var _this = this;
-        html = _.template($('#messages-template').html())({});
+        dt = new Date();
+        html = _.template($('#messages-template').html())({
+          channel: this.options.channel,
+          date: "" + (dt.getFullYear()) + "-" + (dt.getMonth() + 1) + "-" + (dt.getDate())
+        });
         messages = '';
         _.each(this.collection.models, function(log) {
-          var dt;
+          var message;
           dt = new Date(log.get('timestamp'));
+          message = log.escape('message');
+          /*
+                  message = log.get('message')
+                  if message.match(@scriptRegex)
+                    message = log.escape('message')
+                  else
+                    message = message.replace(@urlRegex, "<a href=\"$1\" target=\"blank\">$1</a>")
+          */
           log.set({
-            time: "" + (dt.getHours()) + ":" + (dt.getMinutes())
+            time: "" + (dt.getHours()) + ":" + (dt.getMinutes()),
+            message: message
           });
           return messages += _this.template(log.attributes);
         });
