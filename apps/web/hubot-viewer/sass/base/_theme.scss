@@ -1,0 +1,30 @@
+$white: darken(white, 20%) !default;
+$black: lighten(black, 20%) !default;
+$orange: orange !default;
+$red: lighten(red, 20%) !default;
+$blue: lighten(blue, 20%) !default;
+$green: lighten(green, 20%) !default;
+$gray: lighten(gray, 20%) !default;
+$yellow: lighten(yellow, 20%) !default;
+
+body {
+    $font-color: $black;
+    $normal: $orange;
+    $hover: $red;
+    $active: darken($red, 20%);
+    $visited: $normal;
+    $focus: $hover;
+    color: $font-color;
+    a {
+        @include link-colors($normal, $hover, $active, $visited, $focus);
+        text-decoration: none;
+    }
+    a.selected {
+        $normal: white;
+        $hover: daken(white, 20%);
+        $visited: $normal;
+        @include link-colors($normal, $hover, $active, $visited, $focus);
+        background-color: blue;
+        padding: 0.2em;
+    }
+}

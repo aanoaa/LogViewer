@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>hubot-LogViewer</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="css/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+    <link href="css/print.css" media="print" rel="stylesheet" type="text/css" />
+    <!--[if lt IE 8]>
+      <link href="css/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
+    <![endif]-->
+    <script data-main="scripts/main" src="scripts/lib/require-jquery.js"></script>
+  </head>
+  <body class="container">
+    <script type="x-template" id="channel-item-template">
+      <li><a href="#!/channel/<%= channel %>">#<%= channel %></a></li>
+    </script>
+    <script type="x-template" id="messages-template">
+      <h1>IRC log for #<%= channel %>, <%= date %></h1>
+      <table>
+        <thead>
+          <tr>
+           <th>Time</th>
+           <th>Nick</th>
+           <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </script>
+    <script type="x-template" id="messages-item-template">
+      <tr>
+        <td class="time"><%= time %></td>
+        <td class="nick"><%= nickName %></td>
+        <td class="message"><%= message %></td>
+      </tr>
+    </script>
+    <header>
+    </header>
+    <div id="content">
+    </div>
+    <footer>
+    </footer>
+  </body>
+</html>

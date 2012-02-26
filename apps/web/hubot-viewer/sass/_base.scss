@@ -1,0 +1,17 @@
+$blueprint-grid-columns      : 24;
+$blueprint-grid-width        : 30px;
+$blueprint-grid-margin       : 10px;
+$default-text-shadow-blur    : 3px;
+$default-text-shadow-v-offset: 1px;
+
+@import "compass";
+@import "blueprint";
+@import "blueprint/link-icons";
+@import "fancy-buttons";
+@include global-reset;
+
+// custom
+@import "base/typography";
+@import "base/layout";
+@import "base/theme";
+@import "base/utilities";
