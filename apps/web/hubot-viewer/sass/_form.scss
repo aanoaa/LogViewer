@@ -1,0 +1,36 @@
+@mixin form() {
+    form {
+        @include blueprint-form;
+        @include blueprint-form-sizes(100px, 300px, 100px);
+        @include blueprint-form-borders(#bbbbbb, gold);
+        color: black;
+        input[readonly=readonly] {
+            background-color: lighten(gray, 30%);
+        }
+    }
+    p,legend,fieldset,span {
+        @include border-radius(10px);
+    }
+    ul {
+        li {
+            list-style: none;
+        }
+    }
+    ol {
+        li {
+            list-style: decimal;
+        }
+    }
+    th {
+        max-width: 150px;
+    }
+    td {
+        text-align: left;
+    }
+    input[type=text],input[type=password],textarea {
+        @include border-radius(5px);
+    }
+    input[type=submit] {
+        @include fancy-button(#5F5B9E);
+    }
+}
