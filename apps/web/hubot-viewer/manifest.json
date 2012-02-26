@@ -1,0 +1,14 @@
+{
+  "name": "hubot-logviewer",
+  "version": "0.1",
+  "description": "Opens up a local hubot's IRC logviewer",
+  "background_page": "background.html",
+  "browser_action": {
+    "default_title": "hubot-logviewer",
+    "default_icon": "icon.png"
+  },
+  "permissions": [
+    "tabs",    
+    "http://localhost:8888/"
+  ]
+}
