@@ -11,8 +11,6 @@
         Log.__super__.constructor.apply(this, arguments);
       }
 
-      Log.prototype.idAttribute = '_id';
-
       Log.prototype.initialize = function(attrs) {};
 
       return Log;

@@ -12,13 +12,13 @@ define [
       "!/channel/:channel/:date": "specific"
     channels: =>
       $.ajax
-        url: 'http://localhost:8888/channel'
+        url: 'http://irclog.yuni.in/vd/channel/'
         dataType: 'jsonp'
         success: (data, textStatus, jqXHR) ->
           new ChannelView { data }
     today: (channel) =>
       logs = new Logs
-      logs.url = "http://localhost:8888/channel/#{channel}"
+      logs.url = "http://irclog.yuni.in/vd/channel/#{channel}"
       logs.fetch
         success: (collection, res) ->
           new LogView { collection: collection, channel: channel }

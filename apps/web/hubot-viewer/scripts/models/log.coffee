@@ -4,5 +4,4 @@ define [
   "order!http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.1/backbone-min.js"
 ], ($) ->
   class Log extends Backbone.Model
-    idAttribute: '_id'
     initialize: (attrs) ->

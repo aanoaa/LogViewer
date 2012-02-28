@@ -1,5 +1,8 @@
 @import "base";
 @import "partials";
+body {
+    overflow: auto;
+}
 table {
     @include table-scaffolding;
     @include outer-table-borders(1px, lighten(gray, 20%));

@@ -33,12 +33,12 @@
         messages = '';
         _.each(this.collection.models, function(log) {
           var message;
-          dt = new Date(log.get('timestamp'));
-          message = log.escape('message');
+          dt.setTime(log.get('timestamp') * 1000);
+          message = log.escape('line');
           /*
-                  message = log.get('message')
+                  message = log.get('line')
                   if message.match(@scriptRegex)
-                    message = log.escape('message')
+                    message = log.escape('line')
                   else
                     message = message.replace(@urlRegex, "<a href=\"$1\" target=\"blank\">$1</a>")
           */

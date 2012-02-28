@@ -24,7 +24,7 @@
 
       Router.prototype.channels = function() {
         return $.ajax({
-          url: 'http://localhost:8888/channel',
+          url: 'http://irclog.yuni.in/vd/channel/',
           dataType: 'jsonp',
           success: function(data, textStatus, jqXHR) {
             return new ChannelView({
@@ -37,7 +37,7 @@
       Router.prototype.today = function(channel) {
         var logs;
         logs = new Logs;
-        logs.url = "http://localhost:8888/channel/" + channel;
+        logs.url = "http://irclog.yuni.in/vd/channel/" + channel;
         return logs.fetch({
           success: function(collection, res) {
             return new LogView({
