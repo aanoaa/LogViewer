@@ -157,11 +157,12 @@ body a.selected:active {
 @mixin foo { font-size: 2em; }
 */
 /* line 3, ../sass/screen.scss */
-body {
+#content {
+  height: 600px;
   overflow: auto;
 }
 
-/* line 6, ../sass/screen.scss */
+/* line 7, ../sass/screen.scss */
 table {
   border: 1px solid #b3b3b3;
   width: 100%;
@@ -212,41 +213,41 @@ table tbody tr:last-child th, table tbody tr:last-child td, table tfoot tr:last-
 table tbody tr.last th, table tbody tr.last td, table tfoot tr.last th, table tfoot tr.last td {
   border-bottom-width: 0px;
 }
-/* line 12, ../sass/screen.scss */
+/* line 13, ../sass/screen.scss */
 table tbody tr:nth-child(odd) {
   background-color: #e6e6e6;
 }
-/* line 16, ../sass/screen.scss */
+/* line 17, ../sass/screen.scss */
 table td {
   padding: 0.5em;
 }
-/* line 19, ../sass/screen.scss */
+/* line 20, ../sass/screen.scss */
 table th {
   padding: 0.5em;
 }
-/* line 22, ../sass/screen.scss */
+/* line 23, ../sass/screen.scss */
 table .time {
   width: 5%;
 }
-/* line 25, ../sass/screen.scss */
+/* line 26, ../sass/screen.scss */
 table .nick {
   width: 10%;
   text-align: right;
 }
 
-/* line 30, ../sass/screen.scss */
+/* line 31, ../sass/screen.scss */
 li {
   display: inline;
   margin-right: 1em;
 }
 
-/* line 34, ../sass/screen.scss */
+/* line 35, ../sass/screen.scss */
 h1 {
   padding: 0.5em 0;
   font-size: 2em;
 }
 
-/* line 38, ../sass/screen.scss */
+/* line 39, ../sass/screen.scss */
 .message {
 @inclue text-shadow;
 }
