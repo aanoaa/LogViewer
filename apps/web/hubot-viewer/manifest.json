@@ -1,7 +1,7 @@
 {
   "name": "hubot-logviewer",
   "version": "0.1",
-  "description": "Opens up a local hubot's IRC logviewer",
+  "description": "Yet another IRC LogViewera",
   "background_page": "background.html",
   "browser_action": {
     "default_title": "hubot-logviewer",
@@ -9,6 +9,6 @@
   },
   "permissions": [
     "tabs",    
-    "http://localhost:8888/"
+    "http://irclog.yuni.in"
   ]
 }
